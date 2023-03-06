@@ -12,10 +12,17 @@ import org.springframework.hateoas.RepresentationModel;
 @Setter
 @ToString
 @Entity
-public class Review extends RepresentationModel<Review> {
+public class LessonProgress extends RepresentationModel<LessonProgress> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @OneToOne
+    private Course course;
+
+    @OneToOne
+    private Student student;
+
+    private Boolean completed;
 }

@@ -3,11 +3,14 @@ package com.example.coursej.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 
 @NoArgsConstructor
@@ -26,9 +29,12 @@ public class Student extends User {
     @Column(unique = true)
     private String phone_number;
 
-//    @ManyToMany
-//    @ToString.Exclude
-//    private Set<Course> courses;
+    private String firstAddressLine;
+
+    private String lastAddressLine;
+
+    @OneToMany
+    private Set<Enrollment> enrollments;
 
     public Student(String username, String password, String email, String firstName, String lastName, String phone_number) {
         super(username, password, email);

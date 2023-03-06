@@ -1,7 +1,7 @@
 package com.example.coursej.helpers;
 
 import com.example.coursej.model.Student;
-import com.example.coursej.model.StudentBuilder;
+import com.example.coursej.builder.StudentBuilder;
 import com.example.coursej.service.StudentService;
 
 import org.springframework.stereotype.Component;
