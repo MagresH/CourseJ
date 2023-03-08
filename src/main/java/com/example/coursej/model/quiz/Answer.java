@@ -1,28 +1,27 @@
-package com.example.coursej.model;
+package com.example.coursej.model.quiz;
 
+import com.example.coursej.model.quiz.Question;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.hateoas.RepresentationModel;
 
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
 @Entity
-public class Result extends RepresentationModel<Result> {
+public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne
-    private Student student;
+    private String text;
+
+    private boolean correct;
 
     @ManyToOne
-    private Quiz quiz;
-
-    private Integer score;
+    private Question question;
 }

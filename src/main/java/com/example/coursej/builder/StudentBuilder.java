@@ -1,6 +1,6 @@
 package com.example.coursej.builder;
 
-import com.example.coursej.model.Student;
+import com.example.coursej.model.user.Student;
 
 public class StudentBuilder {
     private String username;

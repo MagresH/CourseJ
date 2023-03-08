@@ -1,4 +1,4 @@
-package com.example.coursej.model;
+package com.example.coursej.model.quiz;
 
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -1,5 +1,7 @@
 package com.example.coursej.model;
 
+import com.example.coursej.model.progress.Progress;
+import com.example.coursej.model.user.Teacher;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,10 +34,4 @@ public class Course extends RepresentationModel<Course> {
     @ToString.Exclude
     private List<Lesson> lessons;
 
-//    @OneToMany(mappedBy = "course")
-//    @ToString.Exclude
-//    private List<Quiz> quizzes;
-
-    @OneToOne
-    private Progress progress;
 }

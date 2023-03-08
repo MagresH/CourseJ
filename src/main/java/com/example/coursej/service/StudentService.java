@@ -1,6 +1,6 @@
 package com.example.coursej.service;
 
-import com.example.coursej.model.Student;
+import com.example.coursej.model.user.Student;
 import com.example.coursej.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

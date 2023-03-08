@@ -41,8 +41,11 @@ public class SpringSecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/h2-console/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/for-admin").hasAuthority("ROLE_ADMIN"))
+
                 .formLogin((formLogin) -> formLogin.permitAll())
+
                 .logout();
         return http.build();
     }

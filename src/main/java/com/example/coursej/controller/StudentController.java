@@ -1,6 +1,6 @@
 package com.example.coursej.controller;
 
-import com.example.coursej.model.Student;
+import com.example.coursej.model.user.Student;
 import com.example.coursej.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;

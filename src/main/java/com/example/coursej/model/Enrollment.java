@@ -1,16 +1,19 @@
 package com.example.coursej.model;
 
 
+import com.example.coursej.model.progress.CourseProgress;
+
+import com.example.coursej.model.user.Student;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
+
 
 @NoArgsConstructor
 @Getter
@@ -26,8 +29,11 @@ public class Enrollment extends RepresentationModel<Enrollment> {
     @OneToOne
     private Course course;
 
-    @OneToOne
+    @ManyToOne
     private Student student;
+
+    @OneToOne
+    private CourseProgress courseProgress;
 
     @CreationTimestamp
     private LocalDateTime enrollTimestamp;

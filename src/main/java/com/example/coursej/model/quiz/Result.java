@@ -1,6 +1,7 @@
-package com.example.coursej.model;
+package com.example.coursej.model.quiz;
 
-import com.example.coursej.model.quiz.Quiz;
+import com.example.coursej.model.progress.QuizProgress;
+import com.example.coursej.model.user.Student;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,29 +9,22 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 
-import java.util.List;
-
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
 @Entity
-public class Lesson extends RepresentationModel<Lesson> {
+public class Result extends RepresentationModel<Result> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    private String title;
-
-    private String description;
-
-    private String contentUrl;
     @ManyToOne
-    private Course course;
+    private Student student;
 
-    @OneToMany(mappedBy = "lesson")
-    private List<Quiz> quizzes;
+    @ManyToOne
+    private QuizProgress quizProgress;
 
-
+    private Integer score;
 }

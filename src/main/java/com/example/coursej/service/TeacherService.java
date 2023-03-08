@@ -1,6 +1,6 @@
 package com.example.coursej.service;
 
-import com.example.coursej.model.Teacher;
+import com.example.coursej.model.user.Teacher;
 import com.example.coursej.repository.TeacherRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class TeacherService {
         return teacherRepository.findAll();
     }
 
-    public Teacher addStudent(Teacher teacher){
+    public Teacher addTeacher(Teacher teacher){
         return teacherRepository.save(teacher);
     }
 

@@ -1,5 +1,7 @@
-package com.example.coursej.model;
+package com.example.coursej.model.quiz;
 
+import com.example.coursej.model.Course;
+import com.example.coursej.model.Lesson;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,10 +25,10 @@ public class Quiz extends RepresentationModel<Quiz> {
     private Course course;
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<Question> questions;
 
-    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
-    private List<Result> results;
+
 
     @ManyToOne
     private Lesson lesson;

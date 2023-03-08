@@ -1,16 +1,14 @@
-package com.example.coursej.model;
+package com.example.coursej.model.user;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import com.example.coursej.model.Enrollment;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import javax.validation.constraints.NotNull;
-import java.util.Set;
+import java.util.List;
 
 
 @NoArgsConstructor
@@ -33,8 +31,8 @@ public class Student extends User {
 
     private String lastAddressLine;
 
-    @OneToMany
-    private Set<Enrollment> enrollments;
+    @OneToMany(mappedBy = "student",fetch = FetchType.EAGER)
+    private List<Enrollment> enrollments;
 
     public Student(String username, String password, String email, String firstName, String lastName, String phone_number) {
         super(username, password, email);

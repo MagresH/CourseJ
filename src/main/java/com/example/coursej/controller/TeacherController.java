@@ -1,13 +1,11 @@
 package com.example.coursej.controller;
 
-import com.example.coursej.model.Teacher;
+import com.example.coursej.model.user.Teacher;
 import com.example.coursej.service.TeacherService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,15 +26,15 @@ public class TeacherController {
         return new ResponseEntity<>(teachers,HttpStatus.OK);
     }
 
-//    @PostMapping("/add")
-//    public ResponseEntity<Student> addStudent(@RequestBody Student student){
-//        Student newStudent = studentService.addStudent(student);
-//        return new ResponseEntity<>(newStudent,HttpStatus.CREATED);
-//    }
-//
-//    @PutMapping("/update")
-//    public ResponseEntity<Student> updateStudent(@RequestBody Student student){
-//        Student updateStudent = studentService.addStudent(student);
-//        return new ResponseEntity<>(updateStudent,HttpStatus.CREATED);
-//    }
+    @PostMapping("/add")
+    public ResponseEntity<Teacher> addTeacher(@RequestBody Teacher teacher){
+        Teacher newTeacher = teacherService.addTeacher(teacher);
+        return new ResponseEntity<>(newTeacher,HttpStatus.CREATED);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<Teacher> updateTeacher(@RequestBody Teacher teacher){
+        Teacher updateTeacher = teacherService.addTeacher(teacher);
+        return new ResponseEntity<>(updateTeacher,HttpStatus.CREATED);
+    }
 }

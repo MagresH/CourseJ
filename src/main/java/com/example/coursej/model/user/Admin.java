@@ -1,20 +1,20 @@
-package com.example.coursej.model;
+package com.example.coursej.model.user;
 
-import jakarta.persistence.Column;
+import com.example.coursej.model.user.User;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.NotNull;
-
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@Entity
+@Entity(name = "admin")
+@Table(name = "admin")
 public class Admin extends User {
-
+    private String test;
 }
 

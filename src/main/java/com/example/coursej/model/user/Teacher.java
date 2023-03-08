@@ -1,5 +1,7 @@
-package com.example.coursej.model;
+package com.example.coursej.model.user;
 
+import com.example.coursej.model.Course;
+import com.example.coursej.model.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
