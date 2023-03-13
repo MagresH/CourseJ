@@ -83,4 +83,7 @@ public class EnrollmentService {
         }
     }
 
+    public List<Enrollment> getEnrollmentsByUserId(Long userId) {
+        return null;
+    }
 }

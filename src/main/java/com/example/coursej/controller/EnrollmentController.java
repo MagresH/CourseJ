@@ -3,8 +3,10 @@ package com.example.coursej.controller;
 import com.example.coursej.model.Enrollment;
 import com.example.coursej.service.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
 import java.util.List;
@@ -21,16 +23,19 @@ public class EnrollmentController {
         this.enrollmentService = enrollmentService;
     }
 
-    @GetMapping
+    @GetMapping//all enrollments
     public ResponseEntity<List<Enrollment>> getAllEnrollments() {
-        List<Enrollment> enrollments = enrollmentService.getAllEnrollments().get();
-        return ResponseEntity.ok(enrollments);
+        Optional<List<Enrollment>> enrollments = enrollmentService.getAllEnrollments();
+        return enrollments.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<List<Enrollment>> getEnrollmentsById(@PathVariable Long id) {
-        Optional<List<Enrollment>> enrollment = enrollmentService.getEnrollmentsById(id);
-        return enrollment.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<Enrollment> getEnrollmentById(@PathVariable Long id) {
+        Optional<Enrollment> enrollment = enrollmentService.getEnrollmentById(id);
+        return enrollment
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found"));
+
     }
 
     @PostMapping
@@ -39,23 +44,32 @@ public class EnrollmentController {
         return ResponseEntity.created(URI.create("/enrollments/" + newEnrollment.getId())).body(newEnrollment);
     }
 
-    @GetMapping("/enrollments/users/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity<List<Enrollment>> getEnrollmentsByUserId(@PathVariable Long userId) {
-        List<Enrollment> enrollments = enrollmentService.getEnrollmentsById(userId).get();
+        List<Enrollment> enrollments = enrollmentService.getEnrollmentsByUserId(userId);
         if (enrollments.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(enrollments);
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<Enrollment> updateEnrollment(@PathVariable Long id, @RequestBody Enrollment enrollment) {
-        Optional<Enrollment> updatedEnrollment = Optional.ofNullable(enrollmentService.updateEnrollment(id, enrollment));
-        return updatedEnrollment.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        Enrollment updatedEnrollment = enrollmentService.updateEnrollment(id, enrollment);
+        if (updatedEnrollment == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updatedEnrollment);
     }
 
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEnrollment(@PathVariable Long id) {
-        enrollmentService.deleteEnrollment(id);
+    public ResponseEntity<Void> deleteEnrollment(@PathVariable("id") Long enrollmentId) {
+        Optional<Enrollment> enrollment = enrollmentService.getEnrollmentById(enrollmentId);
+        if (enrollment.isEmpty()) {
+         //   throw new ResourceNotFoundException("Enrollment not found with ID: " + enrollmentId);
+        }
+        enrollmentService.deleteEnrollment(enrollmentId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -28,7 +28,7 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<CollectionModel<Student>> getAllStudents() {
 
         List<Student> students = studentService.findAllStudents();
@@ -48,13 +48,13 @@ public class StudentController {
         return new ResponseEntity<>(studentOptional.get(), HttpStatus.OK);
     }
 
-    @PostMapping()
+    @PostMapping("/{id}")
     public ResponseEntity<Student> addStudent(@RequestBody Student student) {
         Student newStudent = studentService.addStudent(student);
         return new ResponseEntity<>(newStudent, HttpStatus.CREATED);
     }
 
-    @PutMapping()
+    @PutMapping("/{id}")
     public ResponseEntity<Student> updateStudent(@RequestBody Student student) {
         Student updateStudent = studentService.updateStudent(student);
         return new ResponseEntity<>(updateStudent, HttpStatus.CREATED);
