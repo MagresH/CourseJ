@@ -30,7 +30,7 @@ public class Course extends RepresentationModel<Course> {
     @ManyToOne
     private Teacher teacher;
 
-    @OneToMany(mappedBy = "course")
+    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Lesson> lessons;
 

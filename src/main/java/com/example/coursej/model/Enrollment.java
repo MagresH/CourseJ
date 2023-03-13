@@ -32,7 +32,7 @@ public class Enrollment extends RepresentationModel<Enrollment> {
     @ManyToOne
     private Student student;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private CourseProgress courseProgress;
 
     @CreationTimestamp

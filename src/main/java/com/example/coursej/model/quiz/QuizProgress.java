@@ -1,5 +1,7 @@
-package com.example.coursej.model.progress;
+package com.example.coursej.model.quiz;
 
+import com.example.coursej.model.progress.LessonProgress;
+import com.example.coursej.model.progress.Progress;
 import com.example.coursej.model.quiz.Result;
 import jakarta.persistence.*;
 import lombok.Getter;

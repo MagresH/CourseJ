@@ -15,5 +15,6 @@ public class InitData {
         Student st = new StudentBuilder().setFirstName("John").setLastName("Doe").setUsername("JohnDoe").setPassword("Doe").setEmail("mail").createStudent();
 
         studentService.addStudent(st);
+
     }
 }

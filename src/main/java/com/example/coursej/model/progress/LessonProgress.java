@@ -1,6 +1,7 @@
 package com.example.coursej.model.progress;
 
 import com.example.coursej.model.Lesson;
+import com.example.coursej.model.quiz.QuizProgress;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class LessonProgress extends Progress {
     private CourseProgress courseProgress;
 
     @OneToMany(mappedBy = "lessonProgress",cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<QuizProgress> quizProgresses;
 
 }

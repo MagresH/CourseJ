@@ -16,13 +16,10 @@ import java.util.List;
 @ToString
 @Entity
 public class CourseProgress extends Progress {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
+
     @OneToOne
     private Enrollment enrollment;
-    private Boolean completed;
+
     @OneToMany(mappedBy = "courseProgress",cascade = CascadeType.ALL)
     private List<LessonProgress> lessonProgresses;
 }

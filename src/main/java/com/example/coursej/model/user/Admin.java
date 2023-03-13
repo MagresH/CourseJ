@@ -15,6 +15,5 @@ import lombok.ToString;
 @Entity(name = "admin")
 @Table(name = "admin")
 public class Admin extends User {
-    private String test;
 }
 

@@ -39,13 +39,6 @@ public class StudentController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-//    @GetMapping("/all")
-//    public ResponseEntity<List<Student>> getAllStudents() {
-//
-//        List<Student> students = studentService.findAllStudents();
-//        return new ResponseEntity<>(students, HttpStatus.OK);
-//    }
-
     @GetMapping("/{id}")
     public ResponseEntity<Student> getStudentByID(@PathVariable("id") Long id) {
         Optional<Student> studentOptional = studentService.getStudentById(id);

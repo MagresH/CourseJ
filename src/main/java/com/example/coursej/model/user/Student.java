@@ -31,7 +31,7 @@ public class Student extends User {
 
     private String lastAddressLine;
 
-    @OneToMany(mappedBy = "student",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "student",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private List<Enrollment> enrollments;
 
     public Student(String username, String password, String email, String firstName, String lastName, String phone_number) {
