@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/enrollments/{enrollmentId}/course-progress")
+@RequestMapping("/api/v1/enrollments/{enrollmentId}/course-progress/{courseProgressId}")
 public class CourseProgressController {
 
     private final CourseProgressService courseProgressService;
@@ -19,8 +19,8 @@ public class CourseProgressController {
     }
 
     @GetMapping
-    public ResponseEntity<CourseProgress> getCourseProgressById(@PathVariable Long enrollmentId, @PathVariable Long id) {
-        CourseProgress courseProgress = courseProgressService.getCourseProgressById(id);
+    public ResponseEntity<CourseProgress> getCourseProgressById(@PathVariable Long courseProgressId) {
+        CourseProgress courseProgress = courseProgressService.getCourseProgressById(courseProgressId);
         return ResponseEntity.ok(courseProgress);
     }
 

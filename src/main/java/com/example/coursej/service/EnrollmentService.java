@@ -2,7 +2,6 @@ package com.example.coursej.service;
 
 import com.example.coursej.model.Course;
 import com.example.coursej.model.Enrollment;
-import com.example.coursej.model.progress.CourseProgress;
 import com.example.coursej.model.user.Student;
 import com.example.coursej.repository.EnrollmentRepository;
 import org.springframework.stereotype.Service;
@@ -24,8 +23,8 @@ public class EnrollmentService {
         this.courseService = courseService;
     }
 
-    public Optional<List<Enrollment>> getAllEnrollments() {
-        return Optional.of(enrollmentRepository.findAll());
+    public List<Enrollment> getAllEnrollments() {
+        return enrollmentRepository.findAll();
     }
 
     public Optional<Enrollment> getEnrollmentById(Long id) {
@@ -35,22 +34,11 @@ public class EnrollmentService {
 
 
     public Enrollment addEnrollment(Enrollment enrollment) {
-        Optional<Student> student = studentService.getStudentById(enrollment.getStudent().getId());
-        Optional<Course> course = courseService.getCourseById(enrollment.getCourse().getId());
-
-        if (student.isPresent() && course.isPresent()) {
-            enrollment.setStudent(student.get());
-            enrollment.setCourse(course.get());
-            enrollment.setCourseProgress(new CourseProgress());
-
             return enrollmentRepository.save(enrollment);
-        } else {
-           // throw new ResourceNotFoundException("Student or Course not found.");
         }
-        return enrollment;
-    }
 
-    public Enrollment updateEnrollment(Long id, Enrollment enrollment) {
+    public Enrollment updateEnrollment(Long id, Enrollment enrollment) { //TODO make all updates like this
+
         Optional<Enrollment> existingEnrollment = enrollmentRepository.findById(id);
 
         if (existingEnrollment.isPresent()) {
@@ -62,13 +50,8 @@ public class EnrollmentService {
                 updatedEnrollment.setStudent(student.get());
                 updatedEnrollment.setCourse(course.get());
                 updatedEnrollment.setCourseProgress(enrollment.getCourseProgress());
-
                 return enrollmentRepository.save(updatedEnrollment);
-            } else {
-                //  throw new ResourceNotFoundException("Student or Course not found.");
             }
-        } else {
-            //throw new ResourceNotFoundException("Enrollment not found.");
         }
         return enrollment;
     }
@@ -78,12 +61,10 @@ public class EnrollmentService {
 
         if (enrollment.isPresent()) {
             enrollmentRepository.delete(enrollment.get());
-        } else {
-           // throw new ResourceNotFoundException("Enrollment not found.");
         }
     }
 
     public List<Enrollment> getEnrollmentsByUserId(Long userId) {
-        return null;
+        return enrollmentRepository.getEnrollmentsByStudentId(userId).get();
     }
 }

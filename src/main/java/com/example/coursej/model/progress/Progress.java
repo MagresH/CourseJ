@@ -16,4 +16,8 @@ public abstract class Progress extends RepresentationModel<Progress> {
     @Column(name = "id", nullable = false)
     private Long id;
     private Boolean completed;
+
+    public Progress(Boolean completed) {
+        this.completed = completed;
+    }
 }

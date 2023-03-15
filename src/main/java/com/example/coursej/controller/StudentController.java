@@ -33,8 +33,14 @@ public class StudentController {
 
         List<Student> students = studentService.findAllStudents();
 
-        students.forEach(student -> student.add(linkTo(methodOn(StudentController.class).getStudentByID(student.getId())).withSelfRel()));
-        Link link = linkTo(StudentController.class).slash("all").withSelfRel();
+        //students.forEach(student -> student.add(linkTo(methodOn(StudentController.class).getStudentByID(student.getId())).withSelfRel()));
+        students.forEach(student -> {
+            Link selfLink = linkTo(methodOn(StudentController.class).getStudentByID(student.getId())).withSelfRel();
+            student.add(selfLink);
+            Link enrollmentsLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(student.getId())).withRel("enrollments");
+            student.add(enrollmentsLink);
+        });
+        Link link = linkTo(StudentController.class).withSelfRel();
         CollectionModel<Student> result = CollectionModel.of(students, link);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -43,8 +49,9 @@ public class StudentController {
     public ResponseEntity<Student> getStudentByID(@PathVariable("id") Long id) {
         Optional<Student> studentOptional = studentService.getStudentById(id);
         Link link = linkTo(methodOn(StudentController.class).getStudentByID(studentOptional.get().getId())).withSelfRel();
-        Link link2 = linkTo(StudentController.class).slash("all").withRel(link.getRel());
-        studentOptional.get().add(link, link2);
+        Link link2 = linkTo(StudentController.class).withRel(link.getRel());
+        Link link3 = linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(studentOptional.get().getId())).withRel("enrollments");
+        studentOptional.get().add(link, link2,link3);
         return new ResponseEntity<>(studentOptional.get(), HttpStatus.OK);
     }
 

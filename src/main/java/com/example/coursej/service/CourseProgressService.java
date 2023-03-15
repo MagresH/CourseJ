@@ -25,19 +25,13 @@ public class CourseProgressService {
         courseProgressRepository.save(courseProgress);
         return courseProgress;
     }
-
+    public CourseProgress updateCourseProgress(CourseProgress courseProgress){
+        courseProgressRepository.save(courseProgress);
+        return courseProgress;
+    }
     public CourseProgress getCourseProgressById(Long id) {
         return courseProgressRepository.findById(id).get();
     }
-
-//    public CourseProgress updateCourseProgress(CourseProgress courseProgress) {
-//        return courseProgressRepository.findById(id).map(existingCourseProgress -> {
-//            existingCourseProgress.setProgress(courseProgress.getProgress());
-//            existingCourseProgress.setCourse(courseProgress.getCourse());
-//            existingCourseProgress.setEnrollment(courseProgress.getEnrollment());
-//            return courseProgressRepository.save(existingCourseProgress);
-//        }).orElseThrow(() -> new ResourceNotFoundException("Course progress not found with id " + id));
-//    }
 
     public void deleteCourseProgress(Long id) {
         courseProgressRepository.deleteById(id);

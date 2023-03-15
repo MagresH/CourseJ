@@ -2,6 +2,7 @@ package com.example.coursej.model.user;
 
 import com.example.coursej.model.Course;
 import com.example.coursej.model.user.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,7 +26,8 @@ public class Teacher extends User {
     @Column(unique = true)
     private String phone_number;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
+    @JsonBackReference
     private List<Course> courses;
 
     public Teacher(String username, String password, String email, String firstName, String lastName, String phone_number, List<Course> courses) {

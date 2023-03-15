@@ -7,6 +7,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class LessonProgressService {
@@ -19,7 +21,10 @@ public class LessonProgressService {
         this.lessonProgressRepository = lessonProgressRepository;
         this.courseProgressService = courseProgressService;
     }
-
+    public List<LessonProgress> getAllLessonProgressessByCourseProgressId(Long courseProgressId){
+        List<LessonProgress> lessonProgresses= lessonProgressRepository.getLessonProgressesByCourseProgressId(courseProgressId);
+        return lessonProgresses;
+    }
     public LessonProgress addLessonProgress(LessonProgress lessonProgress, Long courseId, Long lessonId) {
         CourseProgress courseProgress = courseProgressService.getCourseProgressById(courseId);
         if (courseProgress == null) {

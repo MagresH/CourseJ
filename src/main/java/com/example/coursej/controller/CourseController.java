@@ -26,13 +26,13 @@ public class CourseController {
         this.courseService = courseService;
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<CollectionModel<Course>> getAllCourses() {
 
         List<Course> courses = courseService.getAllCourses();
 
         courses.forEach(course -> course.add(linkTo(methodOn(CourseController.class).getCourseById(course.getId())).withSelfRel()));
-        Link link = linkTo(CourseController.class).slash("all").withSelfRel();
+        Link link = linkTo(CourseController.class).withSelfRel();
         CollectionModel<Course> result = CollectionModel.of(courses, link);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -41,7 +41,7 @@ public class CourseController {
     public ResponseEntity<Course> getCourseById(@PathVariable("id") Long id) {
         Optional<Course> course = courseService.getCourseById(id);
         Link link = linkTo(methodOn(CourseController.class).getCourseById(course.get().getId())).withSelfRel();
-        Link link2 = linkTo(CourseController.class).slash("all").withRel(link.getRel());
+        Link link2 = linkTo(CourseController.class).withRel(link.getRel());
         course.get().add(link, link2);
         return new ResponseEntity<>(course.get(), HttpStatus.OK);
     }
@@ -62,5 +62,11 @@ public class CourseController {
     public ResponseEntity<Course> deleteCourse(@PathVariable("id") Long id) {
         courseService.deleteCourse(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping(params = "teacherId")
+    public ResponseEntity<List<Course>> getCoursesByTeacherId(@RequestParam Long teacherId) {
+        List<Course> courses = courseService.getCourseByTeacherId(teacherId);
+        return ResponseEntity.ok(courses);
     }
 }

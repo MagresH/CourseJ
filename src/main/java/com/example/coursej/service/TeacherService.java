@@ -14,8 +14,8 @@ public class TeacherService {
     private final TeacherRepository teacherRepository;
 
     @Autowired
-    public TeacherService(TeacherRepository studentRepository) {
-        this.teacherRepository = studentRepository;
+    public TeacherService(TeacherRepository teacherRepository) {
+        this.teacherRepository = teacherRepository;
     }
 
     public List<Teacher> findAllTeachers() {
@@ -26,4 +26,7 @@ public class TeacherService {
         return teacherRepository.save(teacher);
     }
 
+    public Teacher getTeacherById(Long teacherId) {
+        return teacherRepository.getTeacherById(teacherId);
+    }
 }
