@@ -45,7 +45,7 @@ public class Enrollment extends RepresentationModel<Enrollment> {
     @ManyToOne
     private Student student;
 
-    @JsonBackReference
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToOne(cascade = CascadeType.ALL)
     private CourseProgress courseProgress;
 

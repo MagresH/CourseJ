@@ -20,8 +20,7 @@ public class CourseProgressService {
         this.enrollmentService = enrollmentService;
     }
 
-    public CourseProgress addCourseProgress(CourseProgress courseProgress, Long enrollmentId) {
-        courseProgress.setEnrollment(enrollmentService.getEnrollmentById(enrollmentId).get());
+    public CourseProgress addCourseProgress(CourseProgress courseProgress) {
         courseProgressRepository.save(courseProgress);
         return courseProgress;
     }

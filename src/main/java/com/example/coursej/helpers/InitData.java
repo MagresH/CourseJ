@@ -86,14 +86,20 @@ public class InitData {
                     .setStudent(student)
                     .createEnrollment();
             enrollmentService.addEnrollment(enrollment);
-
             CourseProgress courseProgress = new CourseProgressBuilder()
                     .setCompleted(false)
                     .setEnrollment(enrollment)
                     .createCourseProgress();
-            courseProgressService.addCourseProgress(courseProgress, enrollment.getId());
+            courseProgressService.addCourseProgress(courseProgress);
 
-            List<LessonProgress> lessonProgresses = new ArrayList<>();
+            enrollment.setCourseProgress(courseProgress);
+            enrollmentService.updateEnrollment(enrollment.getId(), enrollment);
+
+
+
+
+
+                    List<LessonProgress> lessonProgresses = new ArrayList<>();
             for (int k = 0; k < 5; k++) {
                 LessonProgress lessonProgress = new LessonProgressBuilder()
                         .setCourseProgress(courseProgress)

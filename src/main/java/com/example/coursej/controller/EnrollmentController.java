@@ -35,10 +35,10 @@ public class EnrollmentController {
         List<Enrollment> enrollments = enrollmentService.getAllEnrollments();
         enrollments.forEach(enrollment -> {
             Link enrollmentSelfLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentById(enrollment.getId())).withSelfRel();
-            //TODO Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.getCourseProgress().getId())).withRel("courseProgress");
+            Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.getId(),enrollment.getCourseProgress().getId())).withRel("courseProgress");
             Link studentLink = linkTo(methodOn(StudentController.class).getStudentByID(enrollment.getStudent().getId())).withRel("student");
             Link courseLink = linkTo(methodOn(CourseController.class).getCourseById(enrollment.getCourse().getId())).withRel("course");
-            enrollment.add(enrollmentSelfLink, studentLink, courseLink);
+            enrollment.add(enrollmentSelfLink, studentLink, courseLink, courseProgressLink);
         });
         CollectionModel<Enrollment> result = CollectionModel.of(enrollments, selfLink);
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -46,16 +46,19 @@ public class EnrollmentController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Enrollment> getEnrollmentById(@PathVariable Long id) {
-        Optional<Enrollment> enrollment = enrollmentService.getEnrollmentById(id);
+
+        Optional<Enrollment> enrollment = enrollmentService.getEnrollmentById(id); //TODO all ById should be like this
+
         Link selfLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentById(id)).withSelfRel();
+        Link selfAllLink = linkTo(EnrollmentController.class).withSelfRel();
         Link userLink = linkTo(methodOn(StudentController.class).getStudentByID(enrollment.get().getStudent().getId())).withRel("student");
         Link courseLink = linkTo(methodOn(CourseController.class).getCourseById(enrollment.get().getCourse().getId())).withRel("course");
-        enrollment.get().add(selfLink, userLink, courseLink);
+        Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.get().getId(),enrollment.get().getCourseProgress().getId())).withRel("courseProgress");
+        enrollment.get().add(userLink, courseLink, courseProgressLink,selfLink, selfAllLink);
 
         return enrollment
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found"));
-
     }
 
     @GetMapping(params = "userId")
