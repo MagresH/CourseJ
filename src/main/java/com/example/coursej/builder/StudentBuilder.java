@@ -1,6 +1,9 @@
 package com.example.coursej.builder;
 
+import com.example.coursej.model.Enrollment;
 import com.example.coursej.model.user.Student;
+
+import java.util.List;
 
 public class StudentBuilder {
     private String username;
@@ -8,7 +11,8 @@ public class StudentBuilder {
     private String email;
     private String firstName;
     private String lastName;
-    private String phone_number;
+    private String phoneNumber;
+    private List<Enrollment> enrollments;
 
     public StudentBuilder setUsername(String username) {
         this.username = username;
@@ -35,12 +39,17 @@ public class StudentBuilder {
         return this;
     }
 
-    public StudentBuilder setPhone_number(String phone_number) {
-        this.phone_number = phone_number;
+    public StudentBuilder setPhone_number(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+        return this;
+    }
+
+    public StudentBuilder setEnrollments(List<Enrollment> enrollments) {
+        this.enrollments = enrollments;
         return this;
     }
 
     public Student createStudent() {
-        return new Student(username, password, email, firstName, lastName, phone_number);
+        return new Student(username, password, email, firstName, lastName, phoneNumber, enrollments);
     }
 }

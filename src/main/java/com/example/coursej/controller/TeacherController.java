@@ -32,7 +32,13 @@ public class TeacherController {
 
         List<Teacher> teachers = teacherService.findAllTeachers();
 
-        teachers.forEach(teacher -> teacher.add(linkTo(methodOn(TeacherController.class).getTeacherById(teacher.getId())).withSelfRel()));
+        teachers.forEach(teacher -> {
+            Link coursesLink = linkTo(methodOn(CourseController.class).getCoursesByTeacherId(teacher.getId())).withRel("courses");
+            Link selfLink = linkTo(methodOn(TeacherController.class).getTeacherById(teacher.getId())).withSelfRel();
+
+            teacher.add(coursesLink,selfLink);
+        });
+
         Link link = linkTo(TeacherController.class).withSelfRel();
 
         CollectionModel<Teacher> result = CollectionModel.of(teachers, link);
@@ -43,11 +49,11 @@ public class TeacherController {
     @GetMapping("/{teacherId}")
     public ResponseEntity<Teacher> getTeacherById(@PathVariable("teacherId") Long teacherId) {
         Teacher teacher = teacherService.getTeacherById(teacherId);
-        Link link = linkTo(methodOn(TeacherController.class).getTeacherById(teacher.getId())).withSelfRel();
-        Link link2 = linkTo(TeacherController.class).withRel(link.getRel());
-        Link link3 = linkTo(methodOn(CourseController.class).getCoursesByTeacherId(teacher.getId())).withRel("courses");
+        Link coursesLink = linkTo(methodOn(CourseController.class).getCoursesByTeacherId(teacher.getId())).withRel("courses");
+        Link selfLink = linkTo(methodOn(TeacherController.class).getTeacherById(teacher.getId())).withSelfRel();
+        Link selfAllLink = linkTo(TeacherController.class).withRel(selfLink.getRel());
 
-        teacher.add(link, link2, link3);
+        teacher.add(coursesLink, selfLink, selfAllLink);
         return ResponseEntity.ok(teacher);
     }
 

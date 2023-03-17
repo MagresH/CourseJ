@@ -15,7 +15,7 @@ import java.util.List;
 
 @Component
 public class InitData {
-    private final int MOCKS = 10;
+    private static final int MOCKS = 10;
     private final StudentService studentService;
     private final EnrollmentService enrollmentService;
     private final CourseService courseService;
@@ -37,18 +37,15 @@ public class InitData {
 
 
     public void mockData() {
-
         for (int i = 0; i < MOCKS; i++) {
-//            Student student = new StudentBuilder()
-//                    .setUsername("username" + i)
-//                    .setPassword("password" + i)
-//                    .setEmail("email" + i + "@example.com")
-//                    .setFirstName("First" + i)
-//                    .setLastName("Last" + i)
-//                    .setPhone_number("123-456-789" + 1)
-//                    .createStudent();
-            Student student = new Student("username" + i, "password" + i, "email" + i + "@example.com",
-                    "First" + i, "Last" + i, "123-456-789" + i);
+            Student student = new StudentBuilder()
+                    .setUsername("username" + i)
+                    .setPassword("password" + i)
+                    .setEmail("email" + i + "@example.com")
+                    .setFirstName("First" + i)
+                    .setLastName("Last" + i)
+                    .setPhone_number("123-456-789" + i)
+                    .createStudent();
             studentService.addStudent(student);
 
             Teacher teacher = new TeacherBuilder()
@@ -95,11 +92,7 @@ public class InitData {
             enrollment.setCourseProgress(courseProgress);
             enrollmentService.updateEnrollment(enrollment.getId(), enrollment);
 
-
-
-
-
-                    List<LessonProgress> lessonProgresses = new ArrayList<>();
+            List<LessonProgress> lessonProgresses = new ArrayList<>();
             for (int k = 0; k < 5; k++) {
                 LessonProgress lessonProgress = new LessonProgressBuilder()
                         .setCourseProgress(courseProgress)

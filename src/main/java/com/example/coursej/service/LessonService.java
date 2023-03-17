@@ -36,4 +36,7 @@ public class LessonService {
         lessonRepository.deleteById(id);
     }
 
+    public List<Lesson> getLessonsByCourseId(Long courseId) {
+        return lessonRepository.getLessonsByCourseId(courseId);
+    }
 }

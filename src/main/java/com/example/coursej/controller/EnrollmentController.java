@@ -1,7 +1,6 @@
 package com.example.coursej.controller;
 
 import com.example.coursej.model.Enrollment;
-import com.example.coursej.model.user.Student;
 import com.example.coursej.service.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -35,7 +34,7 @@ public class EnrollmentController {
         List<Enrollment> enrollments = enrollmentService.getAllEnrollments();
         enrollments.forEach(enrollment -> {
             Link enrollmentSelfLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentById(enrollment.getId())).withSelfRel();
-            Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.getId(),enrollment.getCourseProgress().getId())).withRel("courseProgress");
+            Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.getId(), enrollment.getCourseProgress().getId())).withRel("courseProgress");
             Link studentLink = linkTo(methodOn(StudentController.class).getStudentByID(enrollment.getStudent().getId())).withRel("student");
             Link courseLink = linkTo(methodOn(CourseController.class).getCourseById(enrollment.getCourse().getId())).withRel("course");
             enrollment.add(enrollmentSelfLink, studentLink, courseLink, courseProgressLink);
@@ -53,12 +52,11 @@ public class EnrollmentController {
         Link selfAllLink = linkTo(EnrollmentController.class).withSelfRel();
         Link userLink = linkTo(methodOn(StudentController.class).getStudentByID(enrollment.get().getStudent().getId())).withRel("student");
         Link courseLink = linkTo(methodOn(CourseController.class).getCourseById(enrollment.get().getCourse().getId())).withRel("course");
-        Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.get().getId(),enrollment.get().getCourseProgress().getId())).withRel("courseProgress");
-        enrollment.get().add(userLink, courseLink, courseProgressLink,selfLink, selfAllLink);
-
+        Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.get().getId(), enrollment.get().getCourseProgress().getId())).withRel("courseProgress");
+        enrollment.get().add(userLink, courseLink, courseProgressLink, selfLink, selfAllLink);
         return enrollment
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found")); //TODO find best exception handling solution
     }
 
     @GetMapping(params = "userId")
@@ -68,8 +66,9 @@ public class EnrollmentController {
                 enrollment -> {
                     Link selfLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentById(enrollment.getId())).withSelfRel();
                     Link courseLink = linkTo(methodOn(CourseController.class).getCourseById(enrollment.getCourse().getId())).withRel("course");
+                    Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.getId(), enrollment.getCourseProgress().getId())).withRel("courseProgress");
                     Link studentLink = linkTo(methodOn(StudentController.class).getStudentByID(enrollment.getStudent().getId())).withRel("user");
-                    enrollment.add(selfLink, courseLink, studentLink);
+                    enrollment.add(courseLink, studentLink, courseProgressLink, selfLink);
                 });
 
         CollectionModel<Enrollment> collectionModel = CollectionModel.of(enrollments,

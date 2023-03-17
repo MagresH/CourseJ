@@ -1,16 +1,13 @@
 package com.example.coursej.model.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.hateoas.RepresentationModel;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,7 +19,7 @@ public abstract class User extends RepresentationModel<User> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @NotNull
@@ -37,11 +34,11 @@ public abstract class User extends RepresentationModel<User> {
 
 
     @CreationTimestamp
-    private LocalDateTime createTimestamp;
+    private LocalDateTime userCreationTimestamp;
 
 
     @UpdateTimestamp
-    private LocalDateTime updateTimestamp;
+    private LocalDateTime userUpdateTimestamp;
 
 
     public User(String username, String password, String email) {

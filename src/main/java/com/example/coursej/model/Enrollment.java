@@ -50,7 +50,7 @@ public class Enrollment extends RepresentationModel<Enrollment> {
     private CourseProgress courseProgress;
 
     @CreationTimestamp
-    private LocalDateTime enrollTimestamp;
+    private LocalDateTime enrollCreationTimestamp;
     @UpdateTimestamp
     private LocalDateTime enrollmentUpdateTimestamp;
 }

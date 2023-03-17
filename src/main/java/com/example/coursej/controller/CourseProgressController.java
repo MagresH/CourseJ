@@ -23,27 +23,28 @@ public class CourseProgressController {
     }
 
     @GetMapping
-    public ResponseEntity<CourseProgress> getCourseProgressById(@PathVariable("enrollmentId") Long enrollmentId,@PathVariable("courseProgressId") Long courseProgressId) {
-        CourseProgress courseProgress = courseProgressService.getCourseProgressById(courseProgressId);
-        if (courseProgress == null) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<CourseProgress> getCourseProgressById(@PathVariable("enrollmentId") Long enrollmentId, @PathVariable("courseProgressId") Long courseProgressId) {
 
-        Link selfLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollmentId,courseProgressId)).withSelfRel();
-        Link courseLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentById(enrollmentId)).withRel("enrollment");
-        courseProgress.add(selfLink,courseLink);
+        CourseProgress courseProgress = courseProgressService.getCourseProgressById(courseProgressId);
+
+        Link enrollmentLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentById(enrollmentId)).withRel("enrollment");
+        Link lessonsProgressesLink = linkTo(methodOn(LessonProgressController.class).getLessonsProgressesByCourseProgressId(enrollmentId, courseProgressId)).withRel("lessonsProgresses");
+        Link selfLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollmentId, courseProgressId)).withSelfRel();
+
+        courseProgress.add(selfLink, lessonsProgressesLink, enrollmentLink);
+
         return ResponseEntity.ok(courseProgress);
     }
 
 
     @PostMapping
-    public ResponseEntity<CourseProgress> addCourseProgress(@RequestBody CourseProgress courseProgress) {
+    public ResponseEntity<CourseProgress> addCourseProgress(@PathVariable String courseProgressId, @RequestBody CourseProgress courseProgress) {
         CourseProgress addedCourseProgress = courseProgressService.addCourseProgress(courseProgress);
         return new ResponseEntity<>(addedCourseProgress, HttpStatus.CREATED);
     }
 
-
-    @DeleteMapping("/{id}")
+    //TODO missing put mapping
+    @DeleteMapping
     public ResponseEntity<Void> deleteCourseProgress(@PathVariable Long enrollmentId, @PathVariable Long id) {
         courseProgressService.deleteCourseProgress(id);
         return ResponseEntity.noContent().build();

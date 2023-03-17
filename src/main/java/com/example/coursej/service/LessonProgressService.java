@@ -21,17 +21,11 @@ public class LessonProgressService {
         this.lessonProgressRepository = lessonProgressRepository;
         this.courseProgressService = courseProgressService;
     }
-    public List<LessonProgress> getAllLessonProgressessByCourseProgressId(Long courseProgressId){
+    public List<LessonProgress> getLessonsProgressessByCourseProgressId(Long courseProgressId){
         List<LessonProgress> lessonProgresses= lessonProgressRepository.getLessonProgressesByCourseProgressId(courseProgressId);
         return lessonProgresses;
     }
     public LessonProgress addLessonProgress(LessonProgress lessonProgress, Long courseId, Long lessonId) {
-        CourseProgress courseProgress = courseProgressService.getCourseProgressById(courseId);
-        if (courseProgress == null) {
-            //throw new ResourceNotFoundException("Course progress not found for course with id " + courseId);
-        }
-        lessonProgress.setCourseProgress(courseProgress);
-      //  lessonProgress.setLessonId(lessonId);
         lessonProgressRepository.save(lessonProgress);
         return lessonProgress;
     }

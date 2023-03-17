@@ -1,8 +1,6 @@
 package com.example.coursej.model;
 
-import com.example.coursej.model.quiz.Quiz;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +11,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -30,12 +27,11 @@ public class Lesson extends RepresentationModel<Lesson> {
 
     private String description;
 
-    public Lesson(String title, String description, String contentUrl, Course course, List<Quiz> quizzes) {
+    public Lesson(String title, String description, String contentUrl, Course course) {
         this.title = title;
         this.description = description;
         this.contentUrl = contentUrl;
         this.course = course;
-        this.quizzes = quizzes;
     }
 
     private String contentUrl;
@@ -43,12 +39,8 @@ public class Lesson extends RepresentationModel<Lesson> {
     @JsonBackReference
     private Course course;
 
-    @OneToMany(mappedBy = "lesson")
-    @JsonBackReference
-    private List<Quiz> quizzes;
-
     @CreationTimestamp
     private LocalDateTime lessonCreationTimestamp;
     @UpdateTimestamp
-    private LocalDateTime UpdateTimestamp ;
+    private LocalDateTime updateTimestamp ;
 }

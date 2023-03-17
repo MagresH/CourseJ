@@ -28,8 +28,7 @@ public class CourseProgress extends Progress {
         this.enrollment = enrollment;
         this.lessonProgresses = lessonProgresses;
     }
-
+    @JsonBackReference
     @OneToMany(mappedBy = "courseProgress",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<LessonProgress> lessonProgresses;
 }

@@ -30,10 +30,8 @@ public class StudentController {
 
     @GetMapping
     public ResponseEntity<CollectionModel<Student>> getAllStudents() {
-
         List<Student> students = studentService.findAllStudents();
 
-        //students.forEach(student -> student.add(linkTo(methodOn(StudentController.class).getStudentByID(student.getId())).withSelfRel()));
         students.forEach(student -> {
             Link selfLink = linkTo(methodOn(StudentController.class).getStudentByID(student.getId())).withSelfRel();
             student.add(selfLink);
@@ -48,10 +46,13 @@ public class StudentController {
     @GetMapping("/{id}")
     public ResponseEntity<Student> getStudentByID(@PathVariable("id") Long id) {
         Optional<Student> studentOptional = studentService.getStudentById(id);
+
         Link link = linkTo(methodOn(StudentController.class).getStudentByID(studentOptional.get().getId())).withSelfRel();
         Link link2 = linkTo(StudentController.class).withRel(link.getRel());
         Link link3 = linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(studentOptional.get().getId())).withRel("enrollments");
+
         studentOptional.get().add(link, link2,link3);
+
         return new ResponseEntity<>(studentOptional.get(), HttpStatus.OK);
     }
 

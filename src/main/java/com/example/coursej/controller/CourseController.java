@@ -28,45 +28,73 @@ public class CourseController {
 
     @GetMapping
     public ResponseEntity<CollectionModel<Course>> getAllCourses() {
-
         List<Course> courses = courseService.getAllCourses();
 
-        courses.forEach(course -> course.add(linkTo(methodOn(CourseController.class).getCourseById(course.getId())).withSelfRel()));
-        Link link = linkTo(CourseController.class).withSelfRel();
-        CollectionModel<Course> result = CollectionModel.of(courses, link);
+        courses.forEach(course -> {
+            Link lessonsLink = linkTo(methodOn(LessonController.class).getLessonsByCourseId(course.getId())).withRel("lessons");
+            Link teacherLink = linkTo(methodOn(TeacherController.class).getTeacherById(course.getTeacher().getId())).withRel("teacher");
+            Link selfLink = linkTo(methodOn(CourseController.class).getCourseById(course.getId())).withSelfRel();
+
+            course.add(lessonsLink, teacherLink, selfLink);
+        });
+
+        Link selfAllLink = linkTo(CourseController.class).withSelfRel();
+
+        CollectionModel<Course> result = CollectionModel.of(courses, selfAllLink);
+
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Course> getCourseById(@PathVariable("id") Long id) {
         Optional<Course> course = courseService.getCourseById(id);
-        Link link = linkTo(methodOn(CourseController.class).getCourseById(course.get().getId())).withSelfRel();
-        Link link2 = linkTo(CourseController.class).withRel(link.getRel());
-        course.get().add(link, link2);
+
+        Link lessonsLink = linkTo(methodOn(LessonController.class).getLessonsByCourseId(id)).withRel("lessons");
+        Link teacherLink = linkTo(methodOn(TeacherController.class).getTeacherById(course.get().getTeacher().getId())).withRel("teacher");
+        Link selfLink = linkTo(methodOn(CourseController.class).getCourseById(course.get().getId())).withSelfRel();
+        Link selfAllLink = linkTo(CourseController.class).withSelfRel();
+
+        course.get().add(lessonsLink, teacherLink, selfLink, selfAllLink);
+
         return new ResponseEntity<>(course.get(), HttpStatus.OK);
     }
 
-    @PostMapping()
-    public ResponseEntity<Course> addCourse(@RequestBody Course course) {
+    @GetMapping(params = "teacherId")
+    public ResponseEntity<CollectionModel<Course>> getCoursesByTeacherId(@RequestParam Long teacherId) {
+        List<Course> courses = courseService.getCourseByTeacherId(teacherId);
+
+        courses.forEach(course -> {
+            Link selfLink = linkTo(methodOn(CourseController.class).getCourseById(course.getId())).withSelfRel();
+            Link teacherLink = linkTo(methodOn(TeacherController.class).getTeacherById(course.getTeacher().getId())).withRel("teacher");
+
+            course.add(teacherLink, selfLink);
+        });
+
+        Link selfAllLink = linkTo(CourseController.class).withSelfRel();
+
+        CollectionModel<Course> result = CollectionModel.of(courses, selfAllLink);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping("/{courseId}")
+    public ResponseEntity<Course> addCourse(@PathVariable("courseId") Long courseId, @RequestBody Course course) {
         Course newCourse = courseService.addCourse(course);
+
         return new ResponseEntity<>(newCourse, HttpStatus.CREATED);
     }
 
-    @PutMapping()
-    public ResponseEntity<Course> updateCourse(@RequestBody Course course) {
+    @PutMapping("/{courseId}")
+    public ResponseEntity<Course> updateCourse(@PathVariable("courseId") Long courseId, @RequestBody Course course) {
         Course updatedCourse = courseService.updateCourse(course);
+
         return new ResponseEntity<>(updatedCourse, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Course> deleteCourse(@PathVariable("id") Long id) {
-        courseService.deleteCourse(id);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+    @DeleteMapping("/{courseId}")
+    public ResponseEntity<Course> deleteCourse(@PathVariable("courseId") Long courseId) {
+        courseService.deleteCourse(courseId);
 
-    @GetMapping(params = "teacherId")
-    public ResponseEntity<List<Course>> getCoursesByTeacherId(@RequestParam Long teacherId) {
-        List<Course> courses = courseService.getCourseByTeacherId(teacherId);
-        return ResponseEntity.ok(courses);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -1,11 +1,13 @@
 package com.example.coursej.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.hateoas.RepresentationModel;
+
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Getter
@@ -15,7 +17,23 @@ import org.springframework.hateoas.RepresentationModel;
 public class Review extends RepresentationModel<Review> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @NotNull
     private Long id;
 
+    @NotNull
+    private String title;
+
+    @NotNull
+    private String description;
+
+    @CreationTimestamp
+    private LocalDateTime reviewCreationTimestamp;
+
+    @UpdateTimestamp
+    private LocalDateTime reviewUpdateTimestamp ;
+
+    public Review(String title, String description) {
+        this.title = title;
+        this.description = description;
+    }
 }
