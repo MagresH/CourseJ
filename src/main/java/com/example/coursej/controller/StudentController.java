@@ -40,20 +40,21 @@ public class StudentController {
         });
         Link link = linkTo(StudentController.class).withSelfRel();
         CollectionModel<Student> result = CollectionModel.of(students, link);
+
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Student> getStudentByID(@PathVariable("id") Long id) {
-        Optional<Student> studentOptional = studentService.getStudentById(id);
+        Student student = studentService.getStudentById(id);
 
-        Link link = linkTo(methodOn(StudentController.class).getStudentByID(studentOptional.get().getId())).withSelfRel();
+        Link link = linkTo(methodOn(StudentController.class).getStudentByID(student.getId())).withSelfRel();
         Link link2 = linkTo(StudentController.class).withRel(link.getRel());
-        Link link3 = linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(studentOptional.get().getId())).withRel("enrollments");
+        Link link3 = linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(student.getId())).withRel("enrollments");
 
-        studentOptional.get().add(link, link2,link3);
+        student.add(link, link2, link3);
 
-        return new ResponseEntity<>(studentOptional.get(), HttpStatus.OK);
+        return new ResponseEntity<>(student, HttpStatus.OK);
     }
 
     @PostMapping("/{id}")
@@ -67,8 +68,9 @@ public class StudentController {
         Student updateStudent = studentService.updateStudent(student);
         return new ResponseEntity<>(updateStudent, HttpStatus.CREATED);
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Student> deleteStudent(@PathVariable("id") Long id){
+    public ResponseEntity<Student> deleteStudent(@PathVariable("id") Long id) {
         studentService.deleteStudent(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

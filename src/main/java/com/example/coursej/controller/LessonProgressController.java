@@ -1,6 +1,5 @@
 package com.example.coursej.controller;
 
-import com.example.coursej.model.Enrollment;
 import com.example.coursej.model.progress.LessonProgress;
 import com.example.coursej.service.LessonProgressService;
 import org.springframework.hateoas.CollectionModel;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -28,7 +26,7 @@ public class LessonProgressController {
 
     @GetMapping
     public ResponseEntity<CollectionModel<LessonProgress>> getLessonsProgressesByCourseProgressId(@PathVariable Long enrollmentId, @PathVariable Long courseProgressId) {
-        List<LessonProgress> lessonProgresses = lessonProgressService.getLessonsProgressessByCourseProgressId(courseProgressId);
+        List<LessonProgress> lessonProgresses = lessonProgressService.getLessonsProgressesByCourseProgressId(courseProgressId);
 
         lessonProgresses.forEach(
                 lessonProgress -> {

@@ -90,7 +90,7 @@ public class InitData {
             courseProgressService.addCourseProgress(courseProgress);
 
             enrollment.setCourseProgress(courseProgress);
-            enrollmentService.updateEnrollment(enrollment.getId(), enrollment);
+            enrollmentService.updateEnrollment(enrollment);
 
             List<LessonProgress> lessonProgresses = new ArrayList<>();
             for (int k = 0; k < 5; k++) {

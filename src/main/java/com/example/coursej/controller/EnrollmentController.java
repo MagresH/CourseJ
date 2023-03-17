@@ -46,17 +46,15 @@ public class EnrollmentController {
     @GetMapping("/{id}")
     public ResponseEntity<Enrollment> getEnrollmentById(@PathVariable Long id) {
 
-        Optional<Enrollment> enrollment = enrollmentService.getEnrollmentById(id); //TODO all ById should be like this
+        Enrollment enrollment = enrollmentService.getEnrollmentById(id); //TODO all ById should be like this
 
         Link selfLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentById(id)).withSelfRel();
         Link selfAllLink = linkTo(EnrollmentController.class).withSelfRel();
-        Link userLink = linkTo(methodOn(StudentController.class).getStudentByID(enrollment.get().getStudent().getId())).withRel("student");
-        Link courseLink = linkTo(methodOn(CourseController.class).getCourseById(enrollment.get().getCourse().getId())).withRel("course");
-        Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.get().getId(), enrollment.get().getCourseProgress().getId())).withRel("courseProgress");
-        enrollment.get().add(userLink, courseLink, courseProgressLink, selfLink, selfAllLink);
-        return enrollment
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found")); //TODO find best exception handling solution
+        Link userLink = linkTo(methodOn(StudentController.class).getStudentByID(enrollment.getStudent().getId())).withRel("student");
+        Link courseLink = linkTo(methodOn(CourseController.class).getCourseById(enrollment.getCourse().getId())).withRel("course");
+        Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.getId(), enrollment.getCourseProgress().getId())).withRel("courseProgress");
+        enrollment.add(userLink, courseLink, courseProgressLink, selfLink, selfAllLink);
+        return new ResponseEntity<>(enrollment, HttpStatus.OK);
     }
 
     @GetMapping(params = "userId")
@@ -89,7 +87,7 @@ public class EnrollmentController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Enrollment> updateEnrollment(@PathVariable Long id, @RequestBody Enrollment enrollment) {
-        Enrollment updatedEnrollment = enrollmentService.updateEnrollment(id, enrollment);
+        Enrollment updatedEnrollment = enrollmentService.updateEnrollment(enrollment);
         if (updatedEnrollment == null) {
             return ResponseEntity.notFound().build();
         }
@@ -99,10 +97,6 @@ public class EnrollmentController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEnrollment(@PathVariable("id") Long enrollmentId) {
-        Optional<Enrollment> enrollment = enrollmentService.getEnrollmentById(enrollmentId);
-        if (enrollment.isEmpty()) {
-            //   throw new ResourceNotFoundException("Enrollment not found with ID: " + enrollmentId);
-        }
         enrollmentService.deleteEnrollment(enrollmentId);
         return ResponseEntity.noContent().build();
     }

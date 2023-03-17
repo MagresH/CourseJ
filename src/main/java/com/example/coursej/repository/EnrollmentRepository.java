@@ -12,5 +12,5 @@ import java.util.Optional;
 @Repository
 
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
-    Optional<List<Enrollment>> getEnrollmentsByStudentId(Long id);
+    List<Enrollment> getEnrollmentsByStudentId(Long id);
 }

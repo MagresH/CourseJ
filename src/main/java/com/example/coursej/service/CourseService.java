@@ -5,11 +5,13 @@ import com.example.coursej.model.user.Student;
 import com.example.coursej.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class CourseService {
 
     private final CourseRepository courseRepository;
@@ -23,8 +25,8 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public Optional<Course>getCourseById(Long id) {
-        return courseRepository.findById(id);
+    public Course getCourseById(Long id) {
+        return courseRepository.findById(id).get();
     }
 
     public Course addCourse(Course course) {

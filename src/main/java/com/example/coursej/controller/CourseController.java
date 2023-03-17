@@ -45,18 +45,19 @@ public class CourseController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+
     @GetMapping("/{id}")
     public ResponseEntity<Course> getCourseById(@PathVariable("id") Long id) {
-        Optional<Course> course = courseService.getCourseById(id);
+        Course course = courseService.getCourseById(id);
 
         Link lessonsLink = linkTo(methodOn(LessonController.class).getLessonsByCourseId(id)).withRel("lessons");
-        Link teacherLink = linkTo(methodOn(TeacherController.class).getTeacherById(course.get().getTeacher().getId())).withRel("teacher");
-        Link selfLink = linkTo(methodOn(CourseController.class).getCourseById(course.get().getId())).withSelfRel();
+        Link teacherLink = linkTo(methodOn(TeacherController.class).getTeacherById(course.getTeacher().getId())).withRel("teacher");
+        Link selfLink = linkTo(methodOn(CourseController.class).getCourseById(course.getId())).withSelfRel();
         Link selfAllLink = linkTo(CourseController.class).withSelfRel();
 
-        course.get().add(lessonsLink, teacherLink, selfLink, selfAllLink);
+        course.add(lessonsLink, teacherLink, selfLink, selfAllLink);
 
-        return new ResponseEntity<>(course.get(), HttpStatus.OK);
+        return new ResponseEntity<>(course, HttpStatus.OK);
     }
 
     @GetMapping(params = "teacherId")
@@ -81,7 +82,7 @@ public class CourseController {
     public ResponseEntity<Course> addCourse(@PathVariable("courseId") Long courseId, @RequestBody Course course) {
         Course newCourse = courseService.addCourse(course);
 
-        return new ResponseEntity<>(newCourse, HttpStatus.CREATED);
+        return new ResponseEntity<>(newCourse, HttpStatus.OK);
     }
 
     @PutMapping("/{courseId}")
