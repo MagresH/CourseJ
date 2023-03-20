@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 @AllArgsConstructor
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @MappedSuperclass
-public abstract class User extends RepresentationModel<User> {
+public abstract class User extends RepresentationModel<User>  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
