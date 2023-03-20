@@ -8,11 +8,9 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -35,9 +33,9 @@ public class EnrollmentController {
         enrollments.forEach(enrollment -> {
             Link enrollmentSelfLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentById(enrollment.getId())).withSelfRel();
             Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.getId(), enrollment.getCourseProgress().getId())).withRel("courseProgress");
-            Link studentLink = linkTo(methodOn(StudentController.class).getStudentByID(enrollment.getStudent().getId())).withRel("student");
-            Link courseLink = linkTo(methodOn(CourseController.class).getCourseById(enrollment.getCourse().getId())).withRel("course");
-            enrollment.add(enrollmentSelfLink, studentLink, courseLink, courseProgressLink);
+            Link userLink = linkTo(methodOn(UserController.class).getUserById(enrollment.getUser().getId())).withRel("student");
+            Link courseLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(enrollment.getCourse().getId())).withRel("course");
+            enrollment.add(enrollmentSelfLink, userLink, courseLink, courseProgressLink);
         });
         CollectionModel<Enrollment> result = CollectionModel.of(enrollments, selfLink);
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -46,12 +44,12 @@ public class EnrollmentController {
     @GetMapping("/{id}")
     public ResponseEntity<Enrollment> getEnrollmentById(@PathVariable Long id) {
 
-        Enrollment enrollment = enrollmentService.getEnrollmentById(id); //TODO all ById should be like this
+        Enrollment enrollment = enrollmentService.getEnrollmentById(id);
 
         Link selfLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentById(id)).withSelfRel();
         Link selfAllLink = linkTo(EnrollmentController.class).withSelfRel();
-        Link userLink = linkTo(methodOn(StudentController.class).getStudentByID(enrollment.getStudent().getId())).withRel("student");
-        Link courseLink = linkTo(methodOn(CourseController.class).getCourseById(enrollment.getCourse().getId())).withRel("course");
+        Link userLink = linkTo(methodOn(UserController.class).getUserById(enrollment.getUser().getId())).withRel("student");
+        Link courseLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(enrollment.getCourse().getId())).withRel("course");
         Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.getId(), enrollment.getCourseProgress().getId())).withRel("courseProgress");
         enrollment.add(userLink, courseLink, courseProgressLink, selfLink, selfAllLink);
         return new ResponseEntity<>(enrollment, HttpStatus.OK);
@@ -63,16 +61,16 @@ public class EnrollmentController {
         enrollments.forEach(
                 enrollment -> {
                     Link selfLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentById(enrollment.getId())).withSelfRel();
-                    Link courseLink = linkTo(methodOn(CourseController.class).getCourseById(enrollment.getCourse().getId())).withRel("course");
+                    Link courseLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(enrollment.getCourse().getId())).withRel("course");
                     Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.getId(), enrollment.getCourseProgress().getId())).withRel("courseProgress");
-                    Link studentLink = linkTo(methodOn(StudentController.class).getStudentByID(enrollment.getStudent().getId())).withRel("user");
-                    enrollment.add(courseLink, studentLink, courseProgressLink, selfLink);
+                    Link userLink = linkTo(methodOn(UserController.class).getUserById(enrollment.getUser().getId())).withRel("student");
+                    enrollment.add(courseLink, userLink, courseProgressLink, selfLink);
                 });
 
         CollectionModel<Enrollment> collectionModel = CollectionModel.of(enrollments,
                 linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(userId)).withSelfRel(),
                 linkTo(EnrollmentController.class).withSelfRel(),
-                linkTo(methodOn(StudentController.class).getAllStudents()).withRel("students")
+                linkTo(methodOn(UserController.class).getAllUsers()).withRel("students") //TODO
         );
 
         return ResponseEntity.ok(collectionModel);

@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -32,10 +31,10 @@ public class CourseController {
 
         courses.forEach(course -> {
             Link lessonsLink = linkTo(methodOn(LessonController.class).getLessonsByCourseId(course.getId())).withRel("lessons");
-            Link teacherLink = linkTo(methodOn(TeacherController.class).getTeacherById(course.getTeacher().getId())).withRel("teacher");
-            Link selfLink = linkTo(methodOn(CourseController.class).getCourseById(course.getId())).withSelfRel();
+            Link userLink = linkTo(methodOn(UserController.class).getUserById(course.getUser().getId())).withRel("teacher");
+            Link selfLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(course.getId())).withSelfRel();
 
-            course.add(lessonsLink, teacherLink, selfLink);
+            course.add(lessonsLink, userLink, selfLink);
         });
 
         Link selfAllLink = linkTo(CourseController.class).withSelfRel();
@@ -47,28 +46,28 @@ public class CourseController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<Course> getCourseById(@PathVariable("id") Long id) {
+    public ResponseEntity<Course> getCourseByCourseId(@PathVariable("id") Long id) {
         Course course = courseService.getCourseById(id);
 
         Link lessonsLink = linkTo(methodOn(LessonController.class).getLessonsByCourseId(id)).withRel("lessons");
-        Link teacherLink = linkTo(methodOn(TeacherController.class).getTeacherById(course.getTeacher().getId())).withRel("teacher");
-        Link selfLink = linkTo(methodOn(CourseController.class).getCourseById(course.getId())).withSelfRel();
+        Link userLink = linkTo(methodOn(UserController.class).getUserById(course.getUser().getId())).withRel("teacher");
+        Link selfLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(course.getId())).withSelfRel();
         Link selfAllLink = linkTo(CourseController.class).withSelfRel();
 
-        course.add(lessonsLink, teacherLink, selfLink, selfAllLink);
+        course.add(lessonsLink, userLink, selfLink, selfAllLink);
 
         return new ResponseEntity<>(course, HttpStatus.OK);
     }
 
-    @GetMapping(params = "teacherId")
-    public ResponseEntity<CollectionModel<Course>> getCoursesByTeacherId(@RequestParam Long teacherId) {
-        List<Course> courses = courseService.getCourseByTeacherId(teacherId);
+    @GetMapping(params = "userId")
+    public ResponseEntity<CollectionModel<Course>> getCoursesByUserId(@RequestParam Long userId) {
+        List<Course> courses = courseService.getCourseByTeacherId(userId);
 
         courses.forEach(course -> {
-            Link selfLink = linkTo(methodOn(CourseController.class).getCourseById(course.getId())).withSelfRel();
-            Link teacherLink = linkTo(methodOn(TeacherController.class).getTeacherById(course.getTeacher().getId())).withRel("teacher");
+            Link selfLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(course.getId())).withSelfRel();
+            Link userLink = linkTo(methodOn(UserController.class).getUserById(course.getUser().getId())).withRel("teacher");
 
-            course.add(teacherLink, selfLink);
+            course.add(userLink, selfLink);
         });
 
         Link selfAllLink = linkTo(CourseController.class).withSelfRel();

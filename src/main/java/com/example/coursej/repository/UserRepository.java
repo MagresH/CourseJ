@@ -1,13 +1,13 @@
 package com.example.coursej.repository;
 
-import com.example.coursej.model.user.User;
+import com.example.coursej.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@NoRepositoryBean
-public interface UserRepository<T extends User> extends JpaRepository<T, Long> {
-    Optional<Object> findByUsername(String username);
-    // Optional<T> findByUsername(String username);
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    Optional<User> getUserById(Long id);
 }

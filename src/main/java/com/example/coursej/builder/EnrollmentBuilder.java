@@ -3,11 +3,11 @@ package com.example.coursej.builder;
 import com.example.coursej.model.Course;
 import com.example.coursej.model.Enrollment;
 import com.example.coursej.model.progress.CourseProgress;
-import com.example.coursej.model.user.Student;
+import com.example.coursej.model.User;
 
 public class EnrollmentBuilder {
     private Course course;
-    private Student student;
+    private User user;
     private CourseProgress courseProgress;
 
     public EnrollmentBuilder setCourse(Course course) {
@@ -15,8 +15,8 @@ public class EnrollmentBuilder {
         return this;
     }
 
-    public EnrollmentBuilder setStudent(Student student) {
-        this.student = student;
+    public EnrollmentBuilder setStudent(User user) {
+        this.user = user;
         return this;
     }
 
@@ -26,6 +26,6 @@ public class EnrollmentBuilder {
     }
 
     public Enrollment createEnrollment() {
-        return new Enrollment(course, student, courseProgress);
+        return new Enrollment(course, user, courseProgress);
     }
 }

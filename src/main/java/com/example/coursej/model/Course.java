@@ -1,10 +1,8 @@
 package com.example.coursej.model;
 
-import com.example.coursej.model.progress.Progress;
-import com.example.coursej.model.user.Teacher;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,16 +32,17 @@ public class Course extends RepresentationModel<Course> {
 
     private String description;
 
-    public Course(String title, String description, Teacher teacher, List<Lesson> lessons) {
-        this.title = title;
-        this.description = description;
-        this.teacher = teacher;
-        this.lessons = lessons;
-    }
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonBackReference
-    private Teacher teacher;
+    private User user;
+
+    public Course(String title, String description, User user, List<Lesson> lessons) {
+        this.title = title;
+        this.description = description;
+        this.user = user;
+        this.lessons = lessons;
+    }
 
     @OneToMany(mappedBy = "course",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JsonBackReference

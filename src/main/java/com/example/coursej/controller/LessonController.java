@@ -1,7 +1,6 @@
 package com.example.coursej.controller;
 
 import com.example.coursej.model.Lesson;
-import com.example.coursej.model.progress.LessonProgress;
 import com.example.coursej.service.LessonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -32,7 +31,7 @@ public class LessonController {
 
         Link selfLink = linkTo(methodOn(LessonController.class).getLessonById(courseId, lesson.getId())).withSelfRel();
         Link selfAllLink = linkTo(methodOn(LessonController.class).getLessonsByCourseId(courseId)).withSelfRel();
-        Link courseLink = linkTo(methodOn(CourseController.class).getCourseById(courseId)).withRel("course");
+        Link courseLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(courseId)).withRel("course");
 
         lesson.add(courseLink,selfLink, selfAllLink);
 
@@ -50,7 +49,7 @@ public class LessonController {
                 });
 
         CollectionModel<Lesson> collectionModel = CollectionModel.of(lessons,
-                linkTo(methodOn(CourseController.class).getCourseById(courseId)).withRel("course"),
+                linkTo(methodOn(CourseController.class).getCourseByCourseId(courseId)).withRel("course"),
                 linkTo(methodOn(LessonController.class).getLessonsByCourseId(courseId)).withSelfRel()
         );
         return ResponseEntity.ok(collectionModel);

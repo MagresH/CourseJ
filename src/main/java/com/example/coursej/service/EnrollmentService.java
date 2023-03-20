@@ -1,14 +1,11 @@
 package com.example.coursej.service;
 
-import com.example.coursej.model.Course;
 import com.example.coursej.model.Enrollment;
-import com.example.coursej.model.user.Student;
 import com.example.coursej.repository.EnrollmentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -44,6 +41,6 @@ public class EnrollmentService {
     }
 
     public List<Enrollment> getEnrollmentsByUserId(Long userId) {
-        return enrollmentRepository.getEnrollmentsByStudentId(userId);
+        return enrollmentRepository.getEnrollmentsByUserId(userId);
     }
 }

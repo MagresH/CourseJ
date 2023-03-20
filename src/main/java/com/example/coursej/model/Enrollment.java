@@ -3,9 +3,7 @@ package com.example.coursej.model;
 
 import com.example.coursej.model.progress.CourseProgress;
 
-import com.example.coursej.model.user.Student;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -32,18 +30,17 @@ public class Enrollment extends RepresentationModel<Enrollment> {
 
     @OneToOne
     @JsonBackReference
-
     private Course course;
 
-    public Enrollment(Course course, Student student, CourseProgress courseProgress) {
+    public Enrollment(Course course, User user, CourseProgress courseProgress) {
         this.course = course;
-        this.student = student;
+        this.user = user;
         this.courseProgress = courseProgress;
     }
 
     @JsonBackReference
     @ManyToOne
-    private Student student;
+    private User user;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToOne(cascade = CascadeType.ALL)
