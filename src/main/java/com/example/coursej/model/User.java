@@ -1,6 +1,9 @@
 package com.example.coursej.model;
 
+import com.example.coursej.token.Token;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -9,6 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 
@@ -22,7 +26,6 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
-@EqualsAndHashCode(callSuper = false)
 public class User extends RepresentationModel<User> implements UserDetails {
 
     @Id
@@ -30,7 +33,12 @@ public class User extends RepresentationModel<User> implements UserDetails {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    public String getUsername() {
+        return email;
+    }
+
     @NotNull
+    @Column(unique = true)
     private String username;
 
     public User(String username, String password, String email, UserRole role, String firstName, String lastName, String phoneNumber, List<Enrollment> enrollments, List<Course> courses) {
@@ -45,11 +53,18 @@ public class User extends RepresentationModel<User> implements UserDetails {
         this.courses = courses;
     }
 
+
+    @Override
+    @JsonIgnore
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotNull
     private String password;
 
     @NotNull
+    @Column(unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)
@@ -72,35 +87,34 @@ public class User extends RepresentationModel<User> implements UserDetails {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonBackReference
+    @JsonIgnore
     private List<Enrollment> enrollments;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonBackReference
+    @JsonIgnore
     private List<Course> courses;
 
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
+
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }
