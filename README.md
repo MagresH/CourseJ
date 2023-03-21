@@ -21,7 +21,9 @@ The course management system includes the following features:
 The following technologies are used in this project:
 
 - Java 17
-- Maven
 - Spring Boot 3.0.3
 - Spring Data JPA
+- Spring Security 6
+- JWT
 - H2 database (temporary)
+- Maven
