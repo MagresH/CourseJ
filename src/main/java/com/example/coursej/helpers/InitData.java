@@ -41,7 +41,7 @@ public class InitData {
                     .setEmail("email" + i + "@example.com")
                     .setFirstName("First" + i)
                     .setLastName("Last" + i)
-                    .setPhone_number("123-456-789" + i)
+                    .setPhoneNumber("123-456-789" + i)
                     .setRole(UserRole.STUDENT)
                     .createUser();
             userService.addUser(student);
@@ -52,7 +52,7 @@ public class InitData {
                     .setEmail("email" + i*i + 1 + "@example.com")
                     .setFirstName("First" + i)
                     .setLastName("Last" + i)
-                    .setPhone_number("123-456-789" + i + 1)
+                    .setPhoneNumber("123-456-789" + i + 1)
                     .setRole(UserRole.TEACHER)
                     .createUser();
             userService.addUser(teacher);

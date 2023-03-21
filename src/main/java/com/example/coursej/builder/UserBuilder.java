@@ -5,6 +5,7 @@ import com.example.coursej.model.Enrollment;
 import com.example.coursej.model.User;
 import com.example.coursej.model.UserRole;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class UserBuilder {
@@ -17,8 +18,9 @@ public class UserBuilder {
     private String phoneNumber;
     private List<Enrollment> enrollments;
     private List<Course> courses;
-
-
+    private Long id;
+    private LocalDateTime userCreationTimestamp;
+    private LocalDateTime userUpdateTimestamp;
 
     public UserBuilder setUsername(String username) {
         this.username = username;
@@ -50,7 +52,7 @@ public class UserBuilder {
         return this;
     }
 
-    public UserBuilder setPhone_number(String phoneNumber) {
+    public UserBuilder setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
         return this;
     }
@@ -65,6 +67,20 @@ public class UserBuilder {
         return this;
     }
 
+    public UserBuilder setId(Long id) {
+        this.id = id;
+        return this;
+    }
+
+    public UserBuilder setUserCreationTimestamp(LocalDateTime userCreationTimestamp) {
+        this.userCreationTimestamp = userCreationTimestamp;
+        return this;
+    }
+
+    public UserBuilder setUserUpdateTimestamp(LocalDateTime userUpdateTimestamp) {
+        this.userUpdateTimestamp = userUpdateTimestamp;
+        return this;
+    }
 
     public User createUser() {
         return new User(username, password, email, role, firstName, lastName, phoneNumber, enrollments, courses);
