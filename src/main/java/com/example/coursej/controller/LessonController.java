@@ -33,7 +33,7 @@ public class LessonController {
         Link selfAllLink = linkTo(methodOn(LessonController.class).getLessonsByCourseId(courseId)).withSelfRel();
         Link courseLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(courseId)).withRel("course");
 
-        lesson.add(courseLink,selfLink, selfAllLink);
+        lesson.add(courseLink, selfLink, selfAllLink);
 
         return ResponseEntity.ok(lesson);
     }

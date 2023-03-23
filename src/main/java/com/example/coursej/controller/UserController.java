@@ -3,6 +3,7 @@ package com.example.coursej.controller;
 
 import com.example.coursej.model.User;
 import com.example.coursej.service.UserService;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
@@ -12,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.security.Principal;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -39,7 +41,7 @@ public class UserController {
             Link enrollmentsLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(user.getId())).withRel("enrollments");
             Link coursesLink = linkTo(methodOn(CourseController.class).getCoursesByUserId(user.getId())).withRel("courses");
 
-            user.add(selfLink,coursesLink,enrollmentsLink);
+            user.add(selfLink, coursesLink, enrollmentsLink);
         });
         Link link = linkTo(UserController.class).withSelfRel();
         CollectionModel<User> result = CollectionModel.of(users, link);
@@ -47,10 +49,26 @@ public class UserController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
         User user = userService.getUserById(id);
 
+        Link enrollmentsLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(user.getId())).withRel("enrollments");
+        Link coursesLink = linkTo(methodOn(CourseController.class).getCoursesByUserId(user.getId())).withRel("courses");
+        Link selfLink = linkTo(methodOn(UserController.class).getUserById(user.getId())).withSelfRel();
+        Link selfAllLink = linkTo(UserController.class).withRel(selfLink.getRel());
+
+        user.add(selfLink, selfAllLink, enrollmentsLink, coursesLink);
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+    @GetMapping("/me")
+    public ResponseEntity<User> getMe(Principal principal) {
+        System.out.println(principal.getName());
+        User user = userService.getUserByEmail(principal.getName()).get();
+        System.out.println(user.getId());
+        System.out.println(user.getEmail());
         Link enrollmentsLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(user.getId())).withRel("enrollments");
         Link coursesLink = linkTo(methodOn(CourseController.class).getCoursesByUserId(user.getId())).withRel("courses");
         Link selfLink = linkTo(methodOn(UserController.class).getUserById(user.getId())).withSelfRel();

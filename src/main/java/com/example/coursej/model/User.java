@@ -1,9 +1,7 @@
 package com.example.coursej.model;
 
-import com.example.coursej.token.Token;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -26,6 +24,8 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
+@Table(name = "_users")
+@Builder
 public class User extends RepresentationModel<User> implements UserDetails {
 
     @Id
@@ -33,36 +33,19 @@ public class User extends RepresentationModel<User> implements UserDetails {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    public String getUsername() {
-        return email;
-    }
-
     @NotNull
     @Column(unique = true)
     private String username;
-
-    public User(String username, String password, String email, UserRole role, String firstName, String lastName, String phoneNumber, List<Enrollment> enrollments, List<Course> courses) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.role = role;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.enrollments = enrollments;
-        this.courses = courses;
-    }
-
 
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotNull
     private String password;
-
     @NotNull
     @Column(unique = true)
     private String email;
@@ -95,8 +78,9 @@ public class User extends RepresentationModel<User> implements UserDetails {
     @JsonIgnore
     private List<Course> courses;
 
-
-
+    public String getUsername() {
+        return email;
+    }
 
     @Override
     public boolean isAccountNonExpired() {

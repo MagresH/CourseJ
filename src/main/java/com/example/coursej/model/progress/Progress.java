@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -17,7 +17,4 @@ public abstract class Progress extends RepresentationModel<Progress> {
     private Long id;
     private Boolean completed;
 
-    public Progress(Boolean completed) {
-        this.completed = completed;
-    }
 }

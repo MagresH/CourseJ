@@ -1,6 +1,5 @@
 package com.example.coursej.auth;
 
-import com.example.coursej.builder.UserBuilder;
 import com.example.coursej.config.JwtService;
 import com.example.coursej.model.User;
 import com.example.coursej.model.UserRole;
@@ -9,7 +8,6 @@ import com.example.coursej.token.Token;
 import com.example.coursej.token.TokenRepository;
 import com.example.coursej.token.TokenType;
 import lombok.RequiredArgsConstructor;
-import org.h2.mvstore.db.RowDataType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -27,14 +25,14 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        var user = new UserBuilder()
-                .setUsername(request.getUsername())
-                .setFirstName(request.getFirstName())
-                .setLastName(request.getLastName())
-                .setEmail(request.getEmail())
-                .setPassword(passwordEncoder.encode(request.getPassword()))
-                .setRole(UserRole.STUDENT)
-                .createUser();
+        var user = User.builder()
+                .username(request.getUsername())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(UserRole.STUDENT)
+                .build();
         var savedUser = userService.addUser(user);
         var jwtToken = jwtService.generateToken(user);
         saveUserToken(savedUser, jwtToken);

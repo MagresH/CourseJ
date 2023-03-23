@@ -4,17 +4,16 @@ import com.example.coursej.model.Lesson;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString
 @Entity
+@Builder
 public class LessonProgress extends Progress {
     @OneToOne
     private Lesson lesson;
@@ -23,9 +22,4 @@ public class LessonProgress extends Progress {
     @ManyToOne
     private CourseProgress courseProgress;
 
-    public LessonProgress(Boolean completed, Lesson lesson, CourseProgress courseProgress) {
-        super(completed);
-        this.lesson = lesson;
-        this.courseProgress = courseProgress;
-    }
 }
