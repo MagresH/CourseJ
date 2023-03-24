@@ -10,10 +10,12 @@ import org.springframework.hateoas.RepresentationModel;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString
 @Entity
+@Builder
 public class Review extends RepresentationModel<Review> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +34,4 @@ public class Review extends RepresentationModel<Review> {
     @UpdateTimestamp
     private LocalDateTime reviewUpdateTimestamp ;
 
-    public Review(String title, String description) {
-        this.title = title;
-        this.description = description;
-    }
 }

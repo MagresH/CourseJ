@@ -6,10 +6,7 @@ import com.example.coursej.model.progress.CourseProgress;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.hateoas.RepresentationModel;
@@ -18,10 +15,12 @@ import java.time.LocalDateTime;
 
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString
 @Entity
+@Builder
 public class Enrollment extends RepresentationModel<Enrollment> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

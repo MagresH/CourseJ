@@ -16,8 +16,9 @@ public class CourseJApplication {
 }
 //TODO improve add,put and delete in all controllers
 //TODO Spring Security
-//TODO SWAGGER
-//TODO pagination
-//TODO review service and controller
+//TODO improve SWAGGER
+//TODO implement pagination
+//TODO create review service and controller
 //TODO improve services
-
+//TODO implement caching
+//TODO implement scheduling
