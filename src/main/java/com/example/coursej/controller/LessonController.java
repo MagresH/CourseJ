@@ -27,7 +27,7 @@ public class LessonController {
 
     @GetMapping("/{lessonId}")
     public ResponseEntity<Lesson> getLessonById(@PathVariable("courseId") Long courseId, @PathVariable("lessonId") Long lessonId) {
-        Lesson lesson = lessonService.getLessonById(lessonId).get();
+        Lesson lesson = lessonService.getLessonById(lessonId);
 
         Link selfLink = linkTo(methodOn(LessonController.class).getLessonById(courseId, lesson.getId())).withSelfRel();
         Link selfAllLink = linkTo(methodOn(LessonController.class).getLessonsByCourseId(courseId)).withSelfRel();

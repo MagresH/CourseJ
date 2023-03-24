@@ -40,7 +40,7 @@ public class User extends RepresentationModel<User> implements UserDetails {
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_"+role.name()));
     }
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

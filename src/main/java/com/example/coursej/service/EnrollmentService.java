@@ -24,7 +24,8 @@ public class EnrollmentService {
     }
 
     public Enrollment getEnrollmentById(Long id) {
-        return enrollmentRepository.findById(id).get();
+        return enrollmentRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Enrollment with id " + id + " does not exist"));
     }
 
     public Enrollment addEnrollment(Enrollment enrollment) {

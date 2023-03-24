@@ -14,24 +14,24 @@ import java.util.Optional;
 public class CourseProgressService {
 
     private final CourseProgressRepository courseProgressRepository;
-    private final EnrollmentService enrollmentService;
 
     @Autowired
-    public CourseProgressService(CourseProgressRepository courseProgressRepository, EnrollmentService enrollmentService) {
+    public CourseProgressService(CourseProgressRepository courseProgressRepository) {
         this.courseProgressRepository = courseProgressRepository;
-        this.enrollmentService = enrollmentService;
+
     }
 
     public CourseProgress addCourseProgress(CourseProgress courseProgress) {
-        courseProgressRepository.save(courseProgress);
-        return courseProgress;
+        return courseProgressRepository.save(courseProgress);
     }
-    public CourseProgress updateCourseProgress(CourseProgress courseProgress){
-        courseProgressRepository.save(courseProgress);
-        return courseProgress;
+
+    public CourseProgress updateCourseProgress(CourseProgress courseProgress) {
+        return courseProgressRepository.save(courseProgress);
     }
+
     public CourseProgress getCourseProgressById(Long id) {
-        return courseProgressRepository.findById(id).get();
+        return courseProgressRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("CourseProgress with id " + id + " does not exist"));
     }
 
     public void deleteCourseProgress(Long id) {

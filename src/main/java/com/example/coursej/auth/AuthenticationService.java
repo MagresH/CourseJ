@@ -54,16 +54,15 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) throws AuthenticationException {
-        System.out.println("request auth = " + request);
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        System.out.println("request.getEmail() = " + request.getEmail());
-        User user = userService.getUserByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        System.out.println("user = " + user);
+
+        User user = userService.getUserByEmail(request.getEmail());
+
         var jwtToken = jwtService.generateToken(user);
-        System.out.println("jwtToken = " + jwtToken);
+
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
+
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();

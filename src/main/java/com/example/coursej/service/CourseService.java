@@ -24,7 +24,8 @@ public class CourseService {
     }
 
     public Course getCourseById(Long id) {
-        return courseRepository.findById(id).get();
+        return courseRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Course with id " + id + " does not exist"));
     }
 
     public Course addCourse(Course course) {

@@ -24,8 +24,9 @@ public class LessonService {
         return lessonRepository.save(lesson);
     }
 
-    public Optional<Lesson> getLessonById(Long id) {
-        return lessonRepository.findById(id);
+    public Lesson getLessonById(Long id) {
+        return lessonRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Lesson with id " + id + " does not exist"));
     }
 
     public List<Lesson> getAllLessons() {

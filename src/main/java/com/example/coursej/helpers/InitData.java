@@ -30,11 +30,21 @@ public class InitData {
 
     @Bean
     public void mockData() {
+        User admin = User.builder()
+                .username("admin")
+                .password(new BCryptPasswordEncoder().encode("admin"))
+                .email("admin@admin.pl")
+                .firstName("Admin")
+                .lastName("Admin")
+                .phoneNumber("123-456-789")
+                .role(UserRole.ADMIN)
+                .build();
+        userService.addUser(admin);
         for (int i = 0; i < MOCKS; i++) {
             User student = User.builder()
                     .username("username" + i)
                     .password(new BCryptPasswordEncoder().encode("password" + i))
-                    .email("email" + i*i + 5311 + "@example.com")
+                    .email("email" + i * i + 5311 + "@example.com")
                     .password("email" + i + "@example.com")
                     .firstName("First" + i)
                     .lastName("Last" + i)
@@ -44,9 +54,9 @@ public class InitData {
             userService.addUser(student);
 
             User teacher = User.builder()
-                    .username("username" + i*i + 1 )
+                    .username("username" + i * i + 1)
                     .password(new BCryptPasswordEncoder().encode("password" + i))
-                    .email("email" + i*i + 11 + "@example.com")
+                    .email("email" + i * i + 11 + "@example.com")
                     .firstName("First" + i)
                     .lastName("Last" + i)
                     .phoneNumber("123-456-789" + i + 1)

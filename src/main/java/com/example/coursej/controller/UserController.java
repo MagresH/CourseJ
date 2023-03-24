@@ -49,8 +49,8 @@ public class UserController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
         User user = userService.getUserById(id);
 
@@ -64,11 +64,11 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
     @GetMapping("/me")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<User> getMe(Principal principal) {
-        System.out.println(principal.getName());
-        User user = userService.getUserByEmail(principal.getName()).get();
-        System.out.println(user.getId());
-        System.out.println(user.getEmail());
+
+        User user = userService.getUserByEmail(principal.getName());
+
         Link enrollmentsLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(user.getId())).withRel("enrollments");
         Link coursesLink = linkTo(methodOn(CourseController.class).getCoursesByUserId(user.getId())).withRel("courses");
         Link selfLink = linkTo(methodOn(UserController.class).getUserById(user.getId())).withSelfRel();

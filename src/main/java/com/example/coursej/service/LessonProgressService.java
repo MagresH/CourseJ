@@ -27,7 +27,8 @@ public class LessonProgressService {
     }
 
     public LessonProgress getLessonProgressById(Long id) {
-        return lessonProgressRepository.findById(id).get();
+        return lessonProgressRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("LessonProgress with id " + id + " does not exist"));
     }
 
     public void deleteLessonProgressById(Long id) {
