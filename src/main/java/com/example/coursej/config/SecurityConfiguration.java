@@ -35,6 +35,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests()
                 .requestMatchers(toH2Console()).permitAll()
                 .requestMatchers("/api/v1/auth/**",
+                        "/swagger-ui",
+                        "/swagger-ui/**",
                         "/v2/api-docs",
                         "/configuration/ui",
                         "/swagger-resources/**",

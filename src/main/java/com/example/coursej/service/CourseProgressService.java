@@ -2,12 +2,9 @@ package com.example.coursej.service;
 
 import com.example.coursej.model.progress.CourseProgress;
 import com.example.coursej.repository.CourseProgressRepository;
-import com.example.coursej.service.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -34,7 +31,7 @@ public class CourseProgressService {
                 .orElseThrow(() -> new IllegalStateException("CourseProgress with id " + id + " does not exist"));
     }
 
-    public void deleteCourseProgress(Long id) {
+    public void deleteCourseProgressById(Long id) {
         courseProgressRepository.deleteById(id);
     }
 }

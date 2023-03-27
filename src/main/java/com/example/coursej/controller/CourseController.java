@@ -1,5 +1,6 @@
 package com.example.coursej.controller;
 
+import com.example.coursej.config.SecurityUtil;
 import com.example.coursej.model.Course;
 import com.example.coursej.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +17,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/api/v1/courses")
+@RequestMapping("/api/v1")
 public class CourseController {
 
     private final CourseService courseService;
@@ -25,6 +27,7 @@ public class CourseController {
         this.courseService = courseService;
     }
 
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping
     public ResponseEntity<CollectionModel<Course>> getAllCourses() {
         List<Course> courses = courseService.getAllCourses();
@@ -44,7 +47,7 @@ public class CourseController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<Course> getCourseByCourseId(@PathVariable("id") Long id) {
         Course course = courseService.getCourseById(id);
@@ -59,42 +62,61 @@ public class CourseController {
         return new ResponseEntity<>(course, HttpStatus.OK);
     }
 
-    @GetMapping(params = "userId")
-    public ResponseEntity<CollectionModel<Course>> getCoursesByUserId(@RequestParam Long userId) {
-        List<Course> courses = courseService.getCourseByTeacherId(userId);
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @GetMapping("users/{userId}/courses")
+    public ResponseEntity<CollectionModel<Course>> getCoursesByUserId(@PathVariable("userId") Long userId) {
+        if (!SecurityUtil.isCurrentUser(userId))
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        else {
+            List<Course> courses = courseService.getCourseByTeacherId(userId);
 
-        courses.forEach(course -> {
-            Link selfLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(course.getId())).withSelfRel();
-            Link userLink = linkTo(methodOn(UserController.class).getUserById(course.getUser().getId())).withRel("teacher");
+            courses.forEach(course -> {
+                Link selfLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(course.getId())).withSelfRel();
+                Link userLink = linkTo(methodOn(UserController.class).getUserById(course.getUser().getId())).withRel("teacher");
 
-            course.add(userLink, selfLink);
-        });
+                course.add(userLink, selfLink);
+            });
 
-        Link selfAllLink = linkTo(CourseController.class).withSelfRel();
+            Link selfAllLink = linkTo(CourseController.class).withSelfRel();
 
-        CollectionModel<Course> result = CollectionModel.of(courses, selfAllLink);
+            CollectionModel<Course> result = CollectionModel.of(courses, selfAllLink);
 
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
     }
 
-    @PostMapping("/{courseId}")
-    public ResponseEntity<Course> addCourse(@PathVariable("courseId") Long courseId, @RequestBody Course course) {
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @PostMapping("/courses")
+    public ResponseEntity<Course> addCourse(@RequestBody Course course) {
         Course newCourse = courseService.addCourse(course);
 
         return new ResponseEntity<>(newCourse, HttpStatus.OK);
     }
 
-    @PutMapping("/{courseId}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @PutMapping("/courses/{courseId}")
     public ResponseEntity<Course> updateCourse(@PathVariable("courseId") Long courseId, @RequestBody Course course) {
-        Course updatedCourse = courseService.updateCourse(course);
 
-        return new ResponseEntity<>(updatedCourse, HttpStatus.OK);
+        if (!SecurityUtil.isCurrentUser(course.getUser().getId()))
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        else if (!courseId.equals(course.getId()))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        else {
+            Course updatedCourse = courseService.updateCourse(course);
+            return new ResponseEntity<>(updatedCourse, HttpStatus.OK);
+        }
     }
 
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @DeleteMapping("/{courseId}")
     public ResponseEntity<Course> deleteCourse(@PathVariable("courseId") Long courseId) {
-        courseService.deleteCourse(courseId);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        if (!SecurityUtil.isCurrentUser(courseService.getCourseById(courseId).getUser().getId()))
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        else {
+            courseService.deleteCourseById(courseId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
     }
 }

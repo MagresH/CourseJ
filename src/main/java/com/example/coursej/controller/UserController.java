@@ -1,8 +1,13 @@
 package com.example.coursej.controller;
 
 
+import com.example.coursej.config.SecurityUtil;
 import com.example.coursej.model.User;
 import com.example.coursej.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -22,6 +27,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@Tag(name = "UserController", description = "APIs for managing user resources")
 public class UserController {
 
     private final UserService userService;
@@ -33,6 +39,13 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Get all users", description = "Retrieves all users.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of all users returned successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<CollectionModel<User>> getAllUsers() {
         List<User> users = userService.findAllUsers();
 
@@ -51,6 +64,14 @@ public class UserController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Get user by ID", description = "Retrieves information about a user by their ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User information retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
         User user = userService.getUserById(id);
 
@@ -65,9 +86,14 @@ public class UserController {
     }
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<User> getMe(Principal principal) {
-
-        User user = userService.getUserByEmail(principal.getName());
+    @Operation(summary = "Get current user information", description = "Retrieves information about the currently authenticated user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User information retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<User> getMe() {
+        User user = userService.getUserByEmail(SecurityUtil.getPrincipal().getEmail());
 
         Link enrollmentsLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(user.getId())).withRel("enrollments");
         Link coursesLink = linkTo(methodOn(CourseController.class).getCoursesByUserId(user.getId())).withRel("courses");
@@ -81,6 +107,13 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Add a new user", description = "Adds a new user to the system.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User created successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<User> addUser(@RequestBody User user) {
         User newUser = userService.addUser(user);
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
@@ -88,6 +121,14 @@ public class UserController {
 
     @PutMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Update user by ID", description = "Updates an existing user by ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User updated successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<User> updateUser(@RequestBody User user) {
         User updateUser = userService.updateUser(user);
         return new ResponseEntity<>(updateUser, HttpStatus.CREATED);
@@ -95,6 +136,14 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Delete user by ID", description = "Deletes an existing user by ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<User> deleteUser(@PathVariable("id") Long id) {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.OK);

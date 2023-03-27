@@ -36,7 +36,7 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
-    public void deleteCourse(Long id) {
+    public void deleteCourseById(Long id) {
         courseRepository.deleteById(id);
     }
 
