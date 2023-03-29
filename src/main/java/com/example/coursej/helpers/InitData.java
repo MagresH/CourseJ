@@ -3,13 +3,9 @@ package com.example.coursej.helpers;
 import com.example.coursej.model.*;
 import com.example.coursej.model.progress.CourseProgress;
 import com.example.coursej.model.progress.LessonProgress;
-import com.example.coursej.model.User;
 import com.example.coursej.service.*;
-
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +44,7 @@ public class InitData {
                     .firstName("First" + i)
                     .lastName("Last" + i)
                     .phoneNumber("123-456-789" + i)
-                    .role(UserRole.STUDENT)
+                    .role(UserRole.USER)
                     .build();
             userService.addUser(student);
 
@@ -59,7 +55,7 @@ public class InitData {
                     .firstName("First" + i)
                     .lastName("Last" + i)
                     .phoneNumber("123-456-789" + i + 1)
-                    .role(UserRole.TEACHER)
+                    .role(UserRole.USER)
                     .build();
             userService.addUser(teacher);
 

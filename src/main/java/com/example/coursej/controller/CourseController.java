@@ -1,8 +1,10 @@
 package com.example.coursej.controller;
 
-import com.example.coursej.config.SecurityUtil;
+import com.example.coursej.config.SecurityUtils;
 import com.example.coursej.model.Course;
 import com.example.coursej.service.CourseService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
@@ -18,6 +20,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/v1")
+@Tag(name = "CourseController", description = "APIs for managing course resources")
 public class CourseController {
 
     private final CourseService courseService;
@@ -28,7 +31,8 @@ public class CourseController {
     }
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    @GetMapping
+    @GetMapping("/courses")
+    @Operation(summary = "Get all courses", description = "Get all courses", tags = {"courses"})
     public ResponseEntity<CollectionModel<Course>> getAllCourses() {
         List<Course> courses = courseService.getAllCourses();
 
@@ -48,7 +52,8 @@ public class CourseController {
     }
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    @GetMapping("/{id}")
+    @GetMapping("/courses/{id}")
+    @Operation(summary = "Get course by id", description = "Get course by id", tags = {"courses"})
     public ResponseEntity<Course> getCourseByCourseId(@PathVariable("id") Long id) {
         Course course = courseService.getCourseById(id);
 
@@ -64,8 +69,9 @@ public class CourseController {
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("users/{userId}/courses")
+    @Operation(summary = "Get courses by user id", description = "Get courses by user id", tags = {"courses"})
     public ResponseEntity<CollectionModel<Course>> getCoursesByUserId(@PathVariable("userId") Long userId) {
-        if (!SecurityUtil.isCurrentUser(userId))
+        if (!SecurityUtils.isCurrentUserOrAdmin(userId) || !SecurityUtils.isAdmin(userId))
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         else {
             List<Course> courses = courseService.getCourseByTeacherId(userId);
@@ -87,6 +93,7 @@ public class CourseController {
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping("/courses")
+    @Operation(summary = "Add course", description = "Add course", tags = {"courses"})
     public ResponseEntity<Course> addCourse(@RequestBody Course course) {
         Course newCourse = courseService.addCourse(course);
 
@@ -95,9 +102,10 @@ public class CourseController {
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PutMapping("/courses/{courseId}")
+    @Operation(summary = "Update course", description = "Update course", tags = {"courses"})
     public ResponseEntity<Course> updateCourse(@PathVariable("courseId") Long courseId, @RequestBody Course course) {
 
-        if (!SecurityUtil.isCurrentUser(course.getUser().getId()))
+        if (!SecurityUtils.isCurrentUserOrAdmin(course.getUser().getId()))
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         else if (!courseId.equals(course.getId()))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -108,10 +116,11 @@ public class CourseController {
     }
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    @DeleteMapping("/{courseId}")
+    @DeleteMapping("/courses/{courseId}")
+    @Operation(summary = "Delete course", description = "Delete course", tags = {"courses"})
     public ResponseEntity<Course> deleteCourse(@PathVariable("courseId") Long courseId) {
 
-        if (!SecurityUtil.isCurrentUser(courseService.getCourseById(courseId).getUser().getId()))
+        if (!SecurityUtils.isCurrentUserOrAdmin(courseService.getCourseById(courseId).getUser().getId()))
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         else {
             courseService.deleteCourseById(courseId);

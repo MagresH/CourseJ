@@ -1,8 +1,10 @@
 package com.example.coursej.controller;
 
-import com.example.coursej.config.SecurityUtil;
+import com.example.coursej.config.SecurityUtils;
 import com.example.coursej.model.progress.CourseProgress;
 import com.example.coursej.service.CourseProgressService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/v1/enrollments/{enrollmentId}/course-progress/{courseProgressId}")
+@Tag(name = "CourseProgressController", description = "APIs for managing course progress resources")
 public class CourseProgressController {
 
     private final CourseProgressService courseProgressService;
@@ -26,12 +29,12 @@ public class CourseProgressController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @Operation(summary = "Get course progress by id", description = "Get course progress by id", tags = {"course-progress"})
     public ResponseEntity<CourseProgress> getCourseProgressById(@PathVariable("enrollmentId") Long enrollmentId,
                                                                 @PathVariable("courseProgressId") Long courseProgressId) {
-        if (SecurityUtil.isCurrentUser(courseProgressService.getCourseProgressById(courseProgressId).getEnrollment().getUser().getId())) {
+        if (!SecurityUtils.isCurrentUserOrAdmin(courseProgressService.getCourseProgressById(courseProgressId).getEnrollment().getUser().getId())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        else {
+        } else {
             CourseProgress courseProgress = courseProgressService.getCourseProgressById(courseProgressId);
             Link enrollmentLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentById(enrollmentId)).withRel("enrollment");
             Link lessonsProgressesLink = linkTo(methodOn(LessonProgressController.class).getLessonsProgressesByCourseProgressId(enrollmentId, courseProgressId)).withRel("lessonsProgresses");
@@ -44,35 +47,41 @@ public class CourseProgressController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Add course progress", description = "Add course progress", tags = {"course-progress"})
     public ResponseEntity<CourseProgress> addCourseProgress(@RequestBody CourseProgress courseProgress) {
-        if (SecurityUtil.isCurrentUser(courseProgress.getEnrollment().getUser().getId())) {
+        if (!SecurityUtils.isCurrentUserOrAdmin(courseProgress.getEnrollment().getUser().getId())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        else {
+        } else {
             CourseProgress addedCourseProgress = courseProgressService.addCourseProgress(courseProgress);
             return new ResponseEntity<>(addedCourseProgress, HttpStatus.CREATED);
         }
     }
+
     @PutMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Update course progress", description = "Update course progress", tags = {"course-progress"})
     public ResponseEntity<CourseProgress> updateCourseProgress(@PathVariable Long courseProgressId,
                                                                @RequestBody CourseProgress courseProgress) {
-        if (SecurityUtil.isCurrentUser(courseProgress.getEnrollment().getUser().getId())) {
+        if (!SecurityUtils.isCurrentUserOrAdmin(courseProgress.getEnrollment().getUser().getId())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        else if (!courseProgressId.equals(courseProgress.getId())) {
+        } else if (!courseProgressId.equals(courseProgress.getId())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        else {
+        } else {
             CourseProgress updatedCourseProgress = courseProgressService.updateCourseProgress(courseProgress);
             return new ResponseEntity<>(updatedCourseProgress, HttpStatus.OK);
         }
 
     }
+
     @DeleteMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Delete course progress", description = "Delete course progress", tags = {"course-progress"})
     public ResponseEntity<Void> deleteCourseProgress(@PathVariable Long courseProgressId) {
-        courseProgressService.deleteCourseProgressById(courseProgressId);
-        return ResponseEntity.noContent().build();
+        if (!SecurityUtils.isCurrentUserOrAdmin(courseProgressService.getCourseProgressById(courseProgressId).getEnrollment().getUser().getId())) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } else {
+            courseProgressService.deleteCourseProgressById(courseProgressId);
+            return ResponseEntity.noContent().build();
+        }
     }
 }
