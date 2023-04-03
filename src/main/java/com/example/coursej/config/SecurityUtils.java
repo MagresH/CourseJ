@@ -1,7 +1,7 @@
 package com.example.coursej.config;
 
-import com.example.coursej.model.User;
-import com.example.coursej.model.UserRole;
+import com.example.coursej.user.User;
+import com.example.coursej.user.UserRole;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 

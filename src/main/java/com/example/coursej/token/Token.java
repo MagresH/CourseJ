@@ -1,6 +1,6 @@
 package com.example.coursej.token;
 
-import com.example.coursej.model.User;
+import com.example.coursej.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

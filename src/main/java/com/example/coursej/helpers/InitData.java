@@ -1,9 +1,18 @@
 package com.example.coursej.helpers;
 
-import com.example.coursej.model.*;
-import com.example.coursej.model.progress.CourseProgress;
-import com.example.coursej.model.progress.LessonProgress;
-import com.example.coursej.service.*;
+import com.example.coursej.course.Course;
+import com.example.coursej.course.CourseService;
+import com.example.coursej.enrollment.Enrollment;
+import com.example.coursej.enrollment.EnrollmentService;
+import com.example.coursej.lesson.Lesson;
+import com.example.coursej.lesson.LessonService;
+import com.example.coursej.progress.courseProgress.CourseProgress;
+import com.example.coursej.progress.courseProgress.CourseProgressService;
+import com.example.coursej.progress.lessonProgress.LessonProgress;
+import com.example.coursej.progress.lessonProgress.LessonProgressService;
+import com.example.coursej.user.User;
+import com.example.coursej.user.UserRole;
+import com.example.coursej.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

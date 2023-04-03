@@ -1,6 +1,7 @@
 package com.example.coursej.config;
 
-import com.example.coursej.service.UserService;
+import com.example.coursej.user.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,11 +41,14 @@ public class ApplicationConfig {
         return config.getAuthenticationManager();
 
     }
-
+    @Bean
+    public ModelMapper modelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper;
+    }
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }
 

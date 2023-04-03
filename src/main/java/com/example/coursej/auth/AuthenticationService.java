@@ -1,9 +1,9 @@
 package com.example.coursej.auth;
 
 import com.example.coursej.config.JwtService;
-import com.example.coursej.model.User;
-import com.example.coursej.model.UserRole;
-import com.example.coursej.service.UserService;
+import com.example.coursej.user.User;
+import com.example.coursej.user.UserRole;
+import com.example.coursej.user.UserService;
 import com.example.coursej.token.Token;
 import com.example.coursej.token.TokenRepository;
 import com.example.coursej.token.TokenType;
@@ -31,7 +31,7 @@ public class AuthenticationService {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(UserRole.STUDENT)
+                .role(UserRole.USER)
                 .build();
         var savedUser = userService.addUser(user);
         var jwtToken = jwtService.generateToken(user);
