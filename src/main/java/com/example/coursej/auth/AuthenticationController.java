@@ -1,9 +1,5 @@
 package com.example.coursej.auth;
 
-import com.example.coursej.auth.AuthenticationRequest;
-import com.example.coursej.auth.AuthenticationResponse;
-import com.example.coursej.auth.AuthenticationService;
-import com.example.coursej.auth.RegisterRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -63,10 +63,10 @@ public class User implements UserDetails {
     @UpdateTimestamp
     private LocalDateTime userUpdateTimestamp;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Enrollment> enrollments;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Course> courses;
 
     public String getUsername() {

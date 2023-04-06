@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @ToString
 @Entity
 @Builder
-public class Enrollment extends RepresentationModel<Enrollment> {
+public class Enrollment  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

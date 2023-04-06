@@ -1,7 +1,5 @@
 package com.example.coursej.course;
 
-import com.example.coursej.course.Course;
-import com.example.coursej.course.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

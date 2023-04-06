@@ -3,10 +3,14 @@ package com.example.coursej.user;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * A DTO for the {@link User} entity
@@ -31,6 +35,9 @@ public class UserDTO extends RepresentationModel<UserDTO> implements Serializabl
     @NotNull
     private String lastName;
     private String phoneNumber;
+
+    private List<Long> coursesIds;
+    private List<Long> enrollmentsIds;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public void setPassword(String password) {
         this.password = password;

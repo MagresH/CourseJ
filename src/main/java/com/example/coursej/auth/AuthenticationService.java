@@ -1,12 +1,12 @@
 package com.example.coursej.auth;
 
 import com.example.coursej.config.JwtService;
-import com.example.coursej.user.User;
-import com.example.coursej.user.UserRole;
-import com.example.coursej.user.UserService;
 import com.example.coursej.token.Token;
 import com.example.coursej.token.TokenRepository;
 import com.example.coursej.token.TokenType;
+import com.example.coursej.user.User;
+import com.example.coursej.user.UserRole;
+import com.example.coursej.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

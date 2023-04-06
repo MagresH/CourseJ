@@ -47,5 +47,4 @@ public class Course extends RepresentationModel<Course> {
     @UpdateTimestamp
     private LocalDateTime courseUpdateTimestamp;
 
-
 }

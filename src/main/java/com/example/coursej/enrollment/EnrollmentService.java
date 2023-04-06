@@ -1,7 +1,5 @@
 package com.example.coursej.enrollment;
 
-import com.example.coursej.enrollment.Enrollment;
-import com.example.coursej.enrollment.EnrollmentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

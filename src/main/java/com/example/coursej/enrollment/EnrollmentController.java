@@ -35,30 +35,31 @@ public class EnrollmentController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/enrollments")
     @Operation(summary = "Get all enrollments", description = "Get all enrollments", tags = {"enrollments"}, operationId = "getAllEnrollments")
-    public ResponseEntity<CollectionModel<Enrollment>> getAllEnrollments() {
+    public ResponseEntity<CollectionModel<EnrollmentDTO>> getAllEnrollments() {
 
         Link selfLink = linkTo(methodOn(EnrollmentController.class).getAllEnrollments()).withSelfRel();
 
         List<Enrollment> enrollments = enrollmentService.getAllEnrollments();
+        var enrollmentDTOs = EnrollmentMapper.INSTANCE.toDTOList(enrollments);
 
-        enrollments.forEach(enrollment -> {
+        enrollmentDTOs.forEach(enrollment -> {
             Link enrollmentSelfLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentById(enrollment.getId())).withSelfRel();
-            Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.getId(), enrollment.getCourseProgress().getId())).withRel("courseProgress");
-            Link userLink = linkTo(methodOn(UserController.class).getUserById(enrollment.getUser().getId())).withRel("student");
-            Link courseLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(enrollment.getCourse().getId())).withRel("course");
+            Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.getId(), enrollment.getCourseProgressId())).withRel("courseProgress");
+            Link userLink = linkTo(methodOn(UserController.class).getUserById(enrollment.getUserId())).withRel("student");
+            Link courseLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(enrollment.getCourseId())).withRel("course");
             enrollment.add(enrollmentSelfLink, userLink, courseLink, courseProgressLink);
         });
 
-        CollectionModel<Enrollment> result = CollectionModel.of(enrollments, selfLink);
+        CollectionModel<EnrollmentDTO> result = CollectionModel.of(enrollmentDTOs, selfLink);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/enrollments/{id}")
     @Operation(summary = "Get enrollment by ID", description = "Returns an enrollment by ID.")
-    public ResponseEntity<Enrollment> getEnrollmentById(@PathVariable Long id) {
+    public ResponseEntity<EnrollmentDTO> getEnrollmentById(@PathVariable Long id) {
         Enrollment enrollment = enrollmentService.getEnrollmentById(id);
-
+        var enrollmentDTO = EnrollmentMapper.INSTANCE.toDTO(enrollment);
         if (!SecurityUtils.isCurrentUserOrAdmin(enrollment.getUser().getId())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } else {
@@ -68,31 +69,31 @@ public class EnrollmentController {
             Link courseLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(enrollment.getCourse().getId())).withRel("course");
             Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.getId(), enrollment.getCourseProgress().getId())).withRel("courseProgress");
 
-            enrollment.add(userLink, courseLink, courseProgressLink, selfLink, selfAllLink);
-            return new ResponseEntity<>(enrollment, HttpStatus.OK);
+            enrollmentDTO.add(userLink, courseLink, courseProgressLink, selfLink, selfAllLink);
+            return new ResponseEntity<>(enrollmentDTO, HttpStatus.OK);
         }
     }
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/users/{userId}/enrollments")
     @Operation(summary = "Get all enrollments by user ID", description = "Returns a list of all enrollments by user ID.")
-    public ResponseEntity<CollectionModel<Enrollment>> getEnrollmentsByUserId(@PathVariable("userId") Long userId) {
+    public ResponseEntity<CollectionModel<EnrollmentDTO>> getEnrollmentsByUserId(@PathVariable("userId") Long userId) {
 
         List<Enrollment> enrollments = enrollmentService.getEnrollmentsByUserId(userId);
-
+        var enrollmentDTOs = EnrollmentMapper.INSTANCE.toDTOList(enrollments);
         if (!SecurityUtils.isCurrentUserOrAdmin(userId)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } else {
-            enrollments.forEach(
+            enrollmentDTOs.forEach(
                     enrollment -> {
                         Link selfLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentById(enrollment.getId())).withSelfRel();
-                        Link courseLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(enrollment.getCourse().getId())).withRel("course");
-                        Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.getId(), enrollment.getCourseProgress().getId())).withRel("courseProgress");
-                        Link userLink = linkTo(methodOn(UserController.class).getUserById(enrollment.getUser().getId())).withRel("student");
+                        Link courseLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(enrollment.getCourseId())).withRel("course");
+                        Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollment.getCourseProgressId(), enrollment.getCourseProgressId())).withRel("courseProgress");
+                        Link userLink = linkTo(methodOn(UserController.class).getUserById(enrollment.getUserId())).withRel("student");
                         enrollment.add(courseLink, userLink, courseProgressLink, selfLink);
                     });
 
-            CollectionModel<Enrollment> collectionModel = CollectionModel.of(enrollments,
+            CollectionModel<EnrollmentDTO> collectionModel = CollectionModel.of(enrollmentDTOs,
                     linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(userId)).withSelfRel(),
                     linkTo(EnrollmentController.class).withSelfRel(),
                     linkTo(methodOn(UserController.class).getAllUsers()).withRel("students")

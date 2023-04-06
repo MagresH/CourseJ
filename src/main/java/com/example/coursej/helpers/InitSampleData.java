@@ -15,6 +15,7 @@ import com.example.coursej.user.UserRole;
 import com.example.coursej.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +25,8 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class InitData {
+@Profile("development")
+public class InitSampleData {
     private static final int MOCKS = 10;
     private final EnrollmentService enrollmentService;
     private final CourseService courseService;
