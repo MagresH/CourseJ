@@ -17,9 +17,7 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@ToString
+@Data
 @Entity
 @Builder
 public class Enrollment  {
@@ -48,6 +46,7 @@ public class Enrollment  {
 
     @CreationTimestamp
     private LocalDateTime enrollCreationTimestamp;
+
     @UpdateTimestamp
     private LocalDateTime enrollmentUpdateTimestamp;
 }

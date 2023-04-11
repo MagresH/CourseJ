@@ -24,16 +24,22 @@ public class UserDTO extends RepresentationModel<UserDTO> implements Serializabl
 
     @NotNull
     private String username;
+
     @NotNull
     @JsonIgnore
     private String password;
+
     @NotNull
     private String email;
+
     private  UserRole role;
+
     @NotNull
     private String firstName;
+
     @NotNull
     private String lastName;
+
     private String phoneNumber;
 
     private List<Long> coursesIds;

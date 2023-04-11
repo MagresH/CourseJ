@@ -13,9 +13,7 @@ import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@ToString
+@Data
 @Entity
 @Builder
 public class CourseProgress extends Progress {

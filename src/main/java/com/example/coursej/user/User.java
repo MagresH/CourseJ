@@ -15,14 +15,12 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
+@Data
 @Entity
 @Table(name = "_users")
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
 
     @Id

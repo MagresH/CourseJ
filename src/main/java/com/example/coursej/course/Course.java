@@ -17,12 +17,10 @@ import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@ToString
+@Data
 @Builder
 @Entity
-public class Course extends RepresentationModel<Course> {
+public class Course {
 
     @Id
     @Column(name = "id", nullable = false, updatable = false)
@@ -44,6 +42,7 @@ public class Course extends RepresentationModel<Course> {
 
     @CreationTimestamp
     private LocalDateTime courseCreationTimestamp;
+
     @UpdateTimestamp
     private LocalDateTime courseUpdateTimestamp;
 

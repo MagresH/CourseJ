@@ -14,10 +14,8 @@ public class CourseJApplication {
 
 }
 
-//TODO improve add,put and delete in all controllers
 //TODO implement pagination
-//TODO create review service and controller
-//TODO improve services
 //TODO implement caching
 //TODO implement scheduling
-//TODO exception handling
+//TODO improve exception handling
+//TODO create tests

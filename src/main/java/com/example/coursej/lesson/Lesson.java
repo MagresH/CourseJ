@@ -12,9 +12,7 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@ToString
+@Data
 @Entity
 @Builder
 public class Lesson extends RepresentationModel<Lesson> {

@@ -12,17 +12,16 @@ import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@ToString
+@Data
 @Entity
 @Builder
 public class LessonProgress extends Progress {
     @OneToOne
     private Lesson lesson;
 
-    @JsonBackReference
     @ManyToOne
     private CourseProgress courseProgress;
+
+
 
 }

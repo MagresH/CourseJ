@@ -39,7 +39,7 @@ public class InitSampleData {
     public void mockData() {
         User admin = User.builder()
                 .username("admin")
-                .password(new BCryptPasswordEncoder().encode("admin"))
+                .password("admin")
                 .email("admin@sample.com")
                 .firstName("Admin")
                 .lastName("Admin")
@@ -47,10 +47,11 @@ public class InitSampleData {
                 .role(UserRole.ADMIN)
                 .build();
         userService.addUser(admin);
+
         for (int i = 0; i < MOCKS; i++) {
             User student = User.builder()
                     .username("username" + i)
-                    .password(new BCryptPasswordEncoder().encode("password" + i))
+                    .password("password" + i)
                     .email("email" + i * i + 5311 + "@example.com")
                     .firstName("First" + i)
                     .lastName("Last" + i)
@@ -61,7 +62,7 @@ public class InitSampleData {
 
             User teacher = User.builder()
                     .username("username" + i * i + 1)
-                    .password(new BCryptPasswordEncoder().encode("password" + i))
+                    .password("password" + i)
                     .email("email" + i * i + 11 + "@example.com")
                     .firstName("First" + i)
                     .lastName("Last" + i)
@@ -77,7 +78,9 @@ public class InitSampleData {
                     .title("title" + i)
                     .build();
             courseService.addCourse(course);
+
             List<Lesson> lessons = new ArrayList<>();
+
             for (int j = 0; j < 5; j++) {
                 Lesson lesson = Lesson.builder()
                         .course(course)
@@ -88,7 +91,9 @@ public class InitSampleData {
                 lessonService.addLesson(lesson);
                 lessons.add(lesson);
             }
+
             course.setLessons(lessons);
+
             courseService.updateCourse(course);
 
             Enrollment enrollment = Enrollment.builder()
@@ -96,12 +101,14 @@ public class InitSampleData {
                     .user(student)
                     .build();
             enrollmentService.addEnrollment(enrollment);
+
             CourseProgress courseProgress = CourseProgress.builder()
                     .enrollment(enrollment)
                     .build();
             courseProgressService.addCourseProgress(courseProgress);
 
             enrollment.setCourseProgress(courseProgress);
+
             enrollmentService.updateEnrollment(enrollment);
 
             List<LessonProgress> lessonProgresses = new ArrayList<>();

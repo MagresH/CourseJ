@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @Transactional
 public class CourseProgressService {
@@ -37,4 +39,10 @@ public class CourseProgressService {
         courseProgressRepository.deleteById(id);
     }
 
+    public void completeCourseProgress(Long courseProgressId) {
+        var courseProgress = getCourseProgressById(courseProgressId);
+        courseProgress.setCompleted(true);
+        courseProgress.setCompleteTimestamp(LocalDateTime.now());
+        courseProgressRepository.save(courseProgress);
+    }
 }

@@ -5,17 +5,14 @@ import com.example.coursej.lesson.LessonController;
 import com.example.coursej.progress.courseProgress.CourseProgressController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -23,17 +20,17 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/api/v1/enrollments/{enrollmentId}/course-progress/{courseProgressId}/lessons-progresses")
 @Tag(name = "LessonProgressController", description = "APIs for managing lesson progress resources")
+@RequiredArgsConstructor
 public class LessonProgressController {
-    private final LessonProgressService lessonProgressService;
 
-    public LessonProgressController(LessonProgressService lessonProgressService) {
-        this.lessonProgressService = lessonProgressService;
-    }
+    private final LessonProgressService lessonProgressService;
+    private final LessonProgressMapper lessonProgressMapper;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    @Operation(summary = "Get all lessons progresses by course progress id", description = "Get all lessons progresses by course progress id", tags = {"lessonsProgresses"})
-    public ResponseEntity<CollectionModel<LessonProgress>> getLessonsProgressesByCourseProgressId(@PathVariable Long enrollmentId, @PathVariable Long courseProgressId) {
+    @Operation(summary = "Get all lessons progresses by course progress id", description = "Get all lessons progresses by course progress id")
+    public ResponseEntity<CollectionModel<LessonProgressDTO>> getLessonsProgressesByCourseProgressId(@PathVariable Long enrollmentId,
+                                                                                                     @PathVariable Long courseProgressId) {
         if (!SecurityUtils.isCurrentUserOrAdmin(lessonProgressService
                 .getLessonsProgressesByCourseProgressId(courseProgressId)
                 .get(0)
@@ -41,20 +38,21 @@ public class LessonProgressController {
                 .getEnrollment()
                 .getUser()
                 .getId())
-        ) return ResponseEntity.status(403).build();
+        ) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-        List<LessonProgress> lessonProgresses = lessonProgressService.getLessonsProgressesByCourseProgressId(courseProgressId);
+        var lessonProgresses = lessonProgressService.getLessonsProgressesByCourseProgressId(courseProgressId);
+        var lessonProgressDTOs = lessonProgressMapper.toDTOList(lessonProgresses)   ;
 
-        lessonProgresses.forEach(
-                lessonProgress -> {
-                    Link lessonLink = WebMvcLinkBuilder.linkTo(methodOn(LessonController.class).getLessonById(courseProgressId, lessonProgress.getLesson().getId())).withRel("lesson");
-                    Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollmentId, courseProgressId)).withRel("courseProgress");
-                    Link selfLink = linkTo(methodOn(LessonProgressController.class).getLessonProgressById(enrollmentId,courseProgressId,lessonProgress.getId())).withSelfRel();
+        lessonProgressDTOs.forEach(
+                lessonProgressDTO -> {
+                    var lessonLink = linkTo(methodOn(LessonController.class).getLessonById(courseProgressId, lessonProgressDTO.getLessonId())).withRel("lesson");
+                    var courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollmentId, courseProgressId)).withRel("courseProgress");
+                    var selfLink = linkTo(methodOn(LessonProgressController.class).getLessonProgressById(enrollmentId,courseProgressId, lessonProgressDTO.getLessonId())).withSelfRel();
 
-                    lessonProgress.add(lessonLink,courseProgressLink, selfLink);
+                    lessonProgressDTO.add(lessonLink,courseProgressLink, selfLink);
                 });
 
-        CollectionModel<LessonProgress> collectionModel = CollectionModel.of(lessonProgresses,
+    CollectionModel<LessonProgressDTO> collectionModel = CollectionModel.of(lessonProgressDTOs,
                 linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollmentId, courseProgressId)).withRel("courseProgress"),
                 linkTo(methodOn(LessonProgressController.class).getLessonsProgressesByCourseProgressId(enrollmentId,courseProgressId)).withRel("lessonsProgresses")
                 );
@@ -65,8 +63,8 @@ public class LessonProgressController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    @Operation(summary = "Get lesson progress by id", description = "Get lesson progress by id", tags = {"lessonsProgresses"})
-    public ResponseEntity<LessonProgress> getLessonProgressById(@PathVariable Long enrollmentId,
+    @Operation(summary = "Get lesson progress by id", description = "Get lesson progress by id")
+    public ResponseEntity<LessonProgressDTO> getLessonProgressById(@PathVariable Long enrollmentId,
                                                                 @PathVariable Long courseProgressId,
                                                                 @PathVariable("id") Long id) {
         if (!SecurityUtils.isCurrentUserOrAdmin(lessonProgressService
@@ -75,16 +73,36 @@ public class LessonProgressController {
                 .getEnrollment()
                 .getUser()
                 .getId())
-        ) return ResponseEntity.status(403).build();
-        LessonProgress lessonProgress = lessonProgressService.getLessonProgressById(id);
+        ) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-        Link selfLink = linkTo(methodOn(LessonProgressController.class).getLessonProgressById(enrollmentId,courseProgressId,id)).withSelfRel();
-        Link selfAllLink = linkTo(methodOn(LessonProgressController.class).getLessonsProgressesByCourseProgressId(enrollmentId,courseProgressId)).withSelfRel();
-        Link courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollmentId, courseProgressId)).withRel("courseProgress");
+        var lessonProgress = lessonProgressService.getLessonProgressById(id);
+        var lessonProgressDTO = lessonProgressMapper.toDTO(lessonProgress);
 
-        lessonProgress.add(selfLink,courseProgressLink,selfAllLink);
+        var selfLink = linkTo(methodOn(LessonProgressController.class).getLessonProgressById(enrollmentId,courseProgressId,id)).withSelfRel();
+        var selfAllLink = linkTo(methodOn(LessonProgressController.class).getLessonsProgressesByCourseProgressId(enrollmentId,courseProgressId)).withSelfRel();
+        var courseProgressLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollmentId, courseProgressId)).withRel("courseProgress");
 
-        return ResponseEntity.ok(lessonProgress);
+        lessonProgressDTO.add(selfLink,courseProgressLink,selfAllLink);
+
+        return ResponseEntity.ok(lessonProgressDTO);
+    }
+    @PostMapping("/{id}/complete")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @Operation(summary = "Complete lesson", description = "Complete lesson")
+    public ResponseEntity<Void> completeLesson(@PathVariable Long enrollmentId,
+                                               @PathVariable Long courseProgressId,
+                                               @PathVariable("id") Long id) {
+        if (!SecurityUtils.isCurrentUserOrAdmin(lessonProgressService
+                .getLessonProgressById(id)
+                .getCourseProgress()
+                .getEnrollment()
+                .getUser()
+                .getId())
+        ) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+        lessonProgressService.completeLesson(id);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
