@@ -3,11 +3,17 @@ package com.example.coursej.course;
 import com.example.coursej.config.SecurityUtils;
 import com.example.coursej.lesson.LessonController;
 import com.example.coursej.user.UserController;
+import com.example.coursej.user.UserDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +33,20 @@ public class CourseController {
 
     private final CourseService courseService;
     private final CourseMapper courseMapper;
+    private final PagedResourcesAssembler<CourseDTO> pagedResourcesAssembler;
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/courses")
     @Operation(summary = "Get all courses", description = "Get all courses")
-    public ResponseEntity<CollectionModel<CourseDTO>> getAllCourses() {
-        List<Course> courses = courseService.getAllCourses();
-        List<CourseDTO> courseDTOs = courseMapper.toDTOList(courses);
+    public ResponseEntity<PagedModel<EntityModel<CourseDTO>>> getAllCourses(
+            @RequestParam(defaultValue = "") String titleFilter,
+            @RequestParam(defaultValue = "") int page,
+            @RequestParam(defaultValue = "30") int size,
+            @RequestParam(defaultValue = "") List<String> sortList,
+            @RequestParam(defaultValue = "ASC") Sort.Direction sortOrder
+    ) {
+        Page<Course> courses = courseService.getAllCourses(titleFilter, page, size, sortList, String.valueOf(sortOrder));
+        Page<CourseDTO> courseDTOs = courses.map(courseMapper::toDTO);
 
         courseDTOs.forEach(course -> {
             Link lessonsLink = WebMvcLinkBuilder.linkTo(methodOn(LessonController.class).getLessonsByCourseId(course.getId())).withRel("lessons");
@@ -45,7 +58,7 @@ public class CourseController {
 
         Link selfAllLink = linkTo(CourseController.class).withSelfRel();
 
-        CollectionModel<CourseDTO> result = CollectionModel.of(courseDTOs, selfAllLink);
+        PagedModel<EntityModel<CourseDTO>> result = pagedResourcesAssembler.toModel(courseDTOs, selfAllLink);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -70,12 +83,12 @@ public class CourseController {
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("users/{userId}/courses")
     @Operation(summary = "Get courses by user id", description = "Get courses by user id")
-    public ResponseEntity<CollectionModel<CourseDTO>> getCoursesByUserId(@PathVariable("userId") Long userId) {
+    public ResponseEntity<PagedModel<EntityModel<CourseDTO>>> getCoursesByUserId(@PathVariable("userId") Long userId) {
         if (!SecurityUtils.isCurrentUserOrAdmin(userId) || !SecurityUtils.isAdmin(userId))
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         else {
-            List<Course> courses = courseService.getCourseByTeacherId(userId);
-            List<CourseDTO> courseDTOs = courseMapper.toDTOList(courses);
+            Page<Course> courses = courseService.getCourseByTeacherId(userId,"",0,30, List.of("id"), "ASC");
+            Page<CourseDTO> courseDTOs = courses.map(courseMapper::toDTO);
 
             courseDTOs.forEach(course -> {
                 Link selfLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(course.getId())).withSelfRel();
@@ -86,7 +99,7 @@ public class CourseController {
 
             Link selfAllLink = linkTo(CourseController.class).withSelfRel();
 
-            CollectionModel<CourseDTO> result = CollectionModel.of(courseDTOs, selfAllLink);
+            PagedModel<EntityModel<CourseDTO>> result = pagedResourcesAssembler.toModel(courseDTOs, selfAllLink);
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         }

@@ -14,8 +14,4 @@ public class CourseJApplication {
 
 }
 
-//TODO implement pagination
-//TODO implement caching
-//TODO implement scheduling
-//TODO improve exception handling
-//TODO create tests
+

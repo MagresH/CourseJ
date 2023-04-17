@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 
+import static org.springframework.data.domain.Sort.Direction.DESC;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -98,7 +99,7 @@ public class EnrollmentController {
             CollectionModel<EnrollmentDTO> collectionModel = CollectionModel.of(enrollmentDTOs,
                     linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(userId)).withSelfRel(),
                     linkTo(EnrollmentController.class).withSelfRel(),
-                    linkTo(methodOn(UserController.class).getAllUsers()).withRel("students")
+                    linkTo(methodOn(UserController.class).getAllUsers(null,null,null,0,30,List.of(),DESC)).withRel("students")
             );
 
             return ResponseEntity.ok(collectionModel);

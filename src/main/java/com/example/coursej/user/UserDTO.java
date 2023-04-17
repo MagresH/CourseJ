@@ -32,7 +32,7 @@ public class UserDTO extends RepresentationModel<UserDTO> implements Serializabl
     @NotNull
     private String email;
 
-    private  UserRole role;
+    private UserRole role;
 
     @NotNull
     private String firstName;
@@ -44,6 +44,7 @@ public class UserDTO extends RepresentationModel<UserDTO> implements Serializabl
 
     private List<Long> coursesIds;
     private List<Long> enrollmentsIds;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public void setPassword(String password) {
         this.password = password;
