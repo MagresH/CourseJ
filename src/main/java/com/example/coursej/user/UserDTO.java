@@ -32,6 +32,7 @@ public class UserDTO extends RepresentationModel<UserDTO> implements Serializabl
     @NotNull
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UserRole role;
 
     @NotNull
@@ -42,7 +43,10 @@ public class UserDTO extends RepresentationModel<UserDTO> implements Serializabl
 
     private String phoneNumber;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<Long> coursesIds;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<Long> enrollmentsIds;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

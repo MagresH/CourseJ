@@ -3,10 +3,13 @@ package com.example.coursej.progress.courseProgress;
 import com.example.coursej.config.SecurityUtils;
 import com.example.coursej.enrollment.EnrollmentController;
 import com.example.coursej.progress.lessonProgress.LessonProgressController;
+import com.example.coursej.progress.lessonProgress.LessonProgressDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
@@ -26,6 +29,7 @@ public class CourseProgressController {
     private final CourseProgressService courseProgressService;
     private final CourseProgressMapper courseProgressMapper;
 
+
     @GetMapping
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @Operation(summary = "Get course progress by id", description = "Get course progress by id")
@@ -40,14 +44,13 @@ public class CourseProgressController {
             var courseProgressDTO = courseProgressMapper.toDTO(courseProgress);
 
             var enrollmentLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentById(enrollmentId)).withRel("enrollment");
-            var lessonsProgressesLink = linkTo(methodOn(LessonProgressController.class).getLessonsProgressesByCourseProgressId(enrollmentId, courseProgressId)).withRel("lessonsProgresses");
+            var lessonsProgressesLink = linkTo(methodOn(LessonProgressController.class).getLessonsProgressesByCourseProgressId(enrollmentId, courseProgressId,0,30, Sort.Direction.ASC)).withRel("lessonsProgresses");
             var selfLink = linkTo(methodOn(CourseProgressController.class).getCourseProgressById(enrollmentId, courseProgressId)).withSelfRel();
 
             courseProgressDTO.add(selfLink, lessonsProgressesLink, enrollmentLink);
 
             return ResponseEntity.ok(courseProgressDTO);
         }
-
     }
 
     @PostMapping
@@ -64,8 +67,8 @@ public class CourseProgressController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } else {
             var courseProgress = courseProgressMapper.toEntity(courseProgressDTO);
-            courseProgressService.addCourseProgress(courseProgress);
-            return new ResponseEntity<>(courseProgressDTO, HttpStatus.CREATED);
+            CourseProgressDTO createdCourseProgressDTO = courseProgressMapper.toDTO(courseProgressService.addCourseProgress(courseProgress));
+            return new ResponseEntity<>(createdCourseProgressDTO, HttpStatus.CREATED);
         }
     }
 
@@ -89,9 +92,9 @@ public class CourseProgressController {
         } else {
 
             var courseProgress = courseProgressMapper.toEntity(courseProgressDTO);
-            courseProgressService.updateCourseProgress(courseProgress);
+            CourseProgressDTO updatedCourseProgressDTO = courseProgressMapper.toDTO(courseProgressService.updateCourseProgress(courseProgress));
 
-            return new ResponseEntity<>(courseProgressDTO, HttpStatus.OK);
+            return new ResponseEntity<>(updatedCourseProgressDTO, HttpStatus.OK);
         }
 
 

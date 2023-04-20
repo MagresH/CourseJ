@@ -24,4 +24,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("select u from User u where upper(u.firstName) like CONCAT('%',UPPER(?1),'%') and upper(u.lastName) like CONCAT('%',UPPER(?2),'%') and upper(u.email) like CONCAT('%',UPPER(?3),'%')")
     Page<User> findUsersByFirstNameLikeAndLastNameLikeAndEmailLikeIgnoreCase(String firstNameFilter, String lastNameFilter, String emailFilter, Pageable pageable);
+
 }

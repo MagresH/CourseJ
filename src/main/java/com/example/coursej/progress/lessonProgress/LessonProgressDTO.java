@@ -1,5 +1,6 @@
 package com.example.coursej.progress.lessonProgress;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,10 +15,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LessonProgressDTO extends RepresentationModel<LessonProgressDTO> implements Serializable {
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
+
     private Long lessonId;
-    private Long courseProgressId;
-    private Boolean isCompleted;
+
+     private Long courseProgressId;
+
+    private boolean completed;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime completeTimestamp;
 }
 

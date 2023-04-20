@@ -6,17 +6,19 @@ import com.example.coursej.progress.courseProgress.CourseProgressController;
 import com.example.coursej.user.UserController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.server.core.TypeReferences;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
@@ -31,16 +33,20 @@ public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
     private final EnrollmentMapper enrollmentMapper;
+    private final PagedResourcesAssembler<EnrollmentDTO> pagedResourcesAssembler;
+
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/enrollments")
     @Operation(summary = "Get all enrollments", description = "Get all enrollments")
-    public ResponseEntity<CollectionModel<EnrollmentDTO>> getAllEnrollments() {
+    public ResponseEntity<PagedModel<EntityModel<EnrollmentDTO>>> getAllEnrollments(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size,
+            @RequestParam(defaultValue = "ASC") String sortDirection
+    ) {
 
-        Link selfLink = linkTo(methodOn(EnrollmentController.class).getAllEnrollments()).withSelfRel();
-
-        var enrollments = enrollmentService.getAllEnrollments();
-        var enrollmentDTOs = enrollmentMapper.toDTOList(enrollments);
+        Page<Enrollment> enrollments = enrollmentService.getSortedEnrollments(page, size, sortDirection);
+        Page<EnrollmentDTO> enrollmentDTOs = enrollments.map(enrollmentMapper::toDTO);
 
         enrollmentDTOs.forEach(enrollment -> {
             Link enrollmentSelfLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentById(enrollment.getId())).withSelfRel();
@@ -50,8 +56,11 @@ public class EnrollmentController {
             enrollment.add(enrollmentSelfLink, userLink, courseLink, courseProgressLink);
         });
 
-        CollectionModel<EnrollmentDTO> result = CollectionModel.of(enrollmentDTOs, selfLink);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        Link selfLink = linkTo(methodOn(EnrollmentController.class).getAllEnrollments(0,30,"ASC")).withSelfRel();
+
+        PagedModel<EntityModel<EnrollmentDTO>> pagedModel = pagedResourcesAssembler.toModel(enrollmentDTOs, selfLink);
+
+        return new ResponseEntity<>(pagedModel, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
@@ -79,10 +88,15 @@ public class EnrollmentController {
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/users/{userId}/enrollments")
     @Operation(summary = "Get all enrollments by user ID", description = "Returns a list of all enrollments by user ID.")
-    public ResponseEntity<CollectionModel<EnrollmentDTO>> getEnrollmentsByUserId(@PathVariable("userId") Long userId) {
+    public ResponseEntity<PagedModel<EntityModel<EnrollmentDTO>>> getEnrollmentsByUserId(@PathVariable("userId") Long userId,
+                                                                                         @RequestParam(defaultValue = "0") int page,
+                                                                                         @RequestParam(defaultValue = "30") int size,
+                                                                                         @RequestParam(defaultValue = "ASC") String sortDirection) {
 
-        var enrollments = enrollmentService.getEnrollmentsByUserId(userId);
-        var enrollmentDTOs = enrollmentMapper.toDTOList(enrollments);
+
+        Page<Enrollment> enrollments = enrollmentService.getSortedEnrollmentsByUserId(userId, page, size, sortDirection);
+        Page<EnrollmentDTO> enrollmentDTOs = enrollments.map(enrollmentMapper::toDTO);
+
 
         if (!SecurityUtils.isCurrentUserOrAdmin(userId)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -96,15 +110,15 @@ public class EnrollmentController {
                         enrollment.add(courseLink, userLink, courseProgressLink, selfLink);
                     });
 
-            CollectionModel<EnrollmentDTO> collectionModel = CollectionModel.of(enrollmentDTOs,
-                    linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(userId)).withSelfRel(),
-                    linkTo(EnrollmentController.class).withSelfRel(),
-                    linkTo(methodOn(UserController.class).getAllUsers(null,null,null,0,30,List.of(),DESC)).withRel("students")
-            );
+                    Link link1 = linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(userId,0,30,"ASC")).withSelfRel();
+                    Link link2 = linkTo(EnrollmentController.class).withSelfRel();
+                    Link link3 = linkTo(methodOn(UserController.class).getAllUsers(null, null, null, 0, 30, List.of(), DESC)).withRel("students");
 
+            PagedModel<EntityModel<EnrollmentDTO>> collectionModel = pagedResourcesAssembler.toModel(enrollmentDTOs, enrollmentDTO -> EntityModel.of(enrollmentDTO, link1, link2, link3));
             return ResponseEntity.ok(collectionModel);
 
         }
+
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -112,22 +126,27 @@ public class EnrollmentController {
     @Operation(summary = "Add enrollment", description = "Adds a new enrollment.")
     public ResponseEntity<EnrollmentDTO> addEnrollment(@RequestBody EnrollmentDTO enrollmentDTO) {
 
-        var enrollment = enrollmentMapper.toEntity(enrollmentDTO);
-        enrollmentService.addEnrollment(enrollment);
-        return new ResponseEntity<>(enrollmentDTO, HttpStatus.CREATED);
+        Enrollment enrollment = enrollmentMapper.toEntity(enrollmentDTO);
+        EnrollmentDTO createdEnrollmentDTO = enrollmentMapper.toDTO(enrollmentService.addEnrollment(enrollment));
+
+        return new ResponseEntity<>(createdEnrollmentDTO, HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/enrollments/{id}")
     @Operation(summary = "Update enrollment", description = "Updates an existing enrollment.")
     public ResponseEntity<EnrollmentDTO> updateEnrollment(@PathVariable Long id, @RequestBody EnrollmentDTO enrollmentDTO) {
-        var enrollment = enrollmentMapper.toEntity(enrollmentDTO);
-        var updatedEnrollment = enrollmentService.updateEnrollment(enrollment);
+
+        Enrollment enrollment = enrollmentMapper.toEntity(enrollmentDTO);
+        Enrollment updatedEnrollment = enrollmentService.updateEnrollment(enrollment);
 
         if (updatedEnrollment == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(enrollmentDTO);
+
+        EnrollmentDTO updatedEnrollmentDTO = enrollmentMapper.toDTO(updatedEnrollment);
+
+        return ResponseEntity.ok(updatedEnrollmentDTO);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

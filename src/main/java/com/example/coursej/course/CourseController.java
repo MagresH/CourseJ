@@ -40,7 +40,7 @@ public class CourseController {
     @Operation(summary = "Get all courses", description = "Get all courses")
     public ResponseEntity<PagedModel<EntityModel<CourseDTO>>> getAllCourses(
             @RequestParam(defaultValue = "") String titleFilter,
-            @RequestParam(defaultValue = "") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "30") int size,
             @RequestParam(defaultValue = "") List<String> sortList,
             @RequestParam(defaultValue = "ASC") Sort.Direction sortOrder
@@ -49,7 +49,7 @@ public class CourseController {
         Page<CourseDTO> courseDTOs = courses.map(courseMapper::toDTO);
 
         courseDTOs.forEach(course -> {
-            Link lessonsLink = WebMvcLinkBuilder.linkTo(methodOn(LessonController.class).getLessonsByCourseId(course.getId())).withRel("lessons");
+            Link lessonsLink = WebMvcLinkBuilder.linkTo(methodOn(LessonController.class).getLessonsByCourseId(course.getId(),"","",0,30,List.of(),"ASC")).withRel("lessons");
             Link userLink = linkTo(methodOn(UserController.class).getUserById(course.getUserId())).withRel("teacher");
             Link selfLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(course.getId())).withSelfRel();
 
@@ -64,13 +64,13 @@ public class CourseController {
     }
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    @GetMapping("/courses/{id}")
-    @Operation(summary = "Get course by id", description = "Get course by id")
-    public ResponseEntity<CourseDTO> getCourseByCourseId(@PathVariable("id") Long id) {
-        Course course = courseService.getCourseById(id);
+    @GetMapping("/courses/{courseId}")
+    @Operation(summary = "Get course by course id", description = "Get course by course id")
+    public ResponseEntity<CourseDTO> getCourseByCourseId(@PathVariable("courseId") Long courseId) {
+        Course course = courseService.getCourseById(courseId);
         CourseDTO courseDTO = courseMapper.toDTO(course);
 
-        Link lessonsLink = linkTo(methodOn(LessonController.class).getLessonsByCourseId(id)).withRel("lessons");
+        Link lessonsLink = linkTo(methodOn(LessonController.class).getLessonsByCourseId(courseId,"","",0,30,List.of(),"ASC")).withRel("lessons");
         Link userLink = linkTo(methodOn(UserController.class).getUserById(course.getUser().getId())).withRel("teacher");
         Link selfLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(course.getId())).withSelfRel();
         Link selfAllLink = linkTo(CourseController.class).withSelfRel();
@@ -87,7 +87,7 @@ public class CourseController {
         if (!SecurityUtils.isCurrentUserOrAdmin(userId) || !SecurityUtils.isAdmin(userId))
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         else {
-            Page<Course> courses = courseService.getCourseByTeacherId(userId,"",0,30, List.of("id"), "ASC");
+            Page<Course> courses = courseService.getCourseByTeacherId(userId, "", 0, 30, List.of("id"), "ASC");
             Page<CourseDTO> courseDTOs = courses.map(courseMapper::toDTO);
 
             courseDTOs.forEach(course -> {
@@ -109,10 +109,11 @@ public class CourseController {
     @PostMapping("/courses")
     @Operation(summary = "Add course", description = "Add course")
     public ResponseEntity<CourseDTO> addCourse(@RequestBody CourseDTO courseDTO) {
-        Course course = courseMapper.toEntity(courseDTO);
-        courseService.addCourse(course);
 
-        return new ResponseEntity<>(courseDTO, HttpStatus.OK);
+        Course course = courseMapper.toEntity(courseDTO);
+        CourseDTO createdCourseDTO = courseMapper.toDTO(courseService.addCourse(course));
+
+        return new ResponseEntity<>(createdCourseDTO, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
@@ -126,8 +127,8 @@ public class CourseController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         else {
             Course course = courseMapper.toEntity(courseDTO);
-            courseService.updateCourse(course);
-            return new ResponseEntity<>(courseDTO, HttpStatus.OK);
+            CourseDTO updatedCourseDTO = courseMapper.toDTO(courseService.updateCourse(course));
+            return new ResponseEntity<>(updatedCourseDTO, HttpStatus.OK);
         }
     }
 

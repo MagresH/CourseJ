@@ -53,7 +53,7 @@ public class UserController {
 
         userDTOs.forEach(user -> {
             Link selfLink = linkTo(methodOn(UserController.class).getUserById(user.getId())).withSelfRel();
-            Link enrollmentsLink = WebMvcLinkBuilder.linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(user.getId())).withRel("enrollments");
+            Link enrollmentsLink = WebMvcLinkBuilder.linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(user.getId(),0,30,"ASC")).withRel("enrollments");
             Link coursesLink = WebMvcLinkBuilder.linkTo(methodOn(CourseController.class).getCoursesByUserId(user.getId())).withRel("courses");
 
             user.add(selfLink, coursesLink, enrollmentsLink);
@@ -74,7 +74,7 @@ public class UserController {
         User user = userService.getUserById(id);
         UserDTO userDto = userMapper.toDTO(user);
 
-        Link enrollmentsLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(user.getId())).withRel("enrollments");
+        Link enrollmentsLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(user.getId(),0,30,"ASC")).withRel("enrollments");
         Link coursesLink = linkTo(methodOn(CourseController.class).getCoursesByUserId(user.getId())).withRel("courses");
         Link selfLink = linkTo(methodOn(UserController.class).getUserById(user.getId())).withSelfRel();
         Link selfAllLink = linkTo(UserController.class).withRel(selfLink.getRel());
@@ -91,7 +91,7 @@ public class UserController {
         User user = userService.getUserByEmail(SecurityUtils.getPrincipal().getEmail());
         UserDTO userDTO = userMapper.toDTO(user);
 
-        Link enrollmentsLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(user.getId())).withRel("enrollments");
+        Link enrollmentsLink = linkTo(methodOn(EnrollmentController.class).getEnrollmentsByUserId(user.getId(),0,30,"ASC")).withRel("enrollments");
         Link coursesLink = linkTo(methodOn(CourseController.class).getCoursesByUserId(user.getId())).withRel("courses");
         Link selfLink = linkTo(methodOn(UserController.class).getUserById(user.getId())).withSelfRel();
         Link selfAllLink = linkTo(UserController.class).withRel(selfLink.getRel());
@@ -107,9 +107,9 @@ public class UserController {
     public ResponseEntity<UserDTO> addUser(@RequestBody UserDTO userDto) {
 
         User user = userMapper.toEntity(userDto);
-        userService.addUser(user);
+        UserDTO createdUserDTO = userMapper.toDTO(userService.addUser(user));
 
-        return new ResponseEntity<>(userDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(createdUserDTO, HttpStatus.CREATED);
     }
 
     @PutMapping
@@ -118,9 +118,9 @@ public class UserController {
     public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO) {
 
         User user =userMapper.toEntity(userDTO);
-        userService.updateUser(user);
+        UserDTO updatedUserDTO = userMapper.toDTO(userService.updateUser(user));
 
-        return new ResponseEntity<>(userDTO, HttpStatus.CREATED);
+        return new ResponseEntity<>(updatedUserDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

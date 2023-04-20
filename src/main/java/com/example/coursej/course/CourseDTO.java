@@ -1,6 +1,7 @@
 package com.example.coursej.course;
 
 import com.example.coursej.user.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,10 +17,18 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CourseDTO extends RepresentationModel<CourseDTO> implements Serializable {
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
+
     private String title;
+
     private String description;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long userId;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<Long> lessonsIds;
 
 }

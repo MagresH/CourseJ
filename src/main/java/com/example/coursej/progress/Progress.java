@@ -19,7 +19,7 @@ public abstract class Progress  {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    private Boolean completed;
+    private boolean completed;
     private LocalDateTime completeTimestamp;
 
 }

@@ -2,17 +2,24 @@ package com.example.coursej.lesson;
 
 import com.example.coursej.config.SecurityUtils;
 import com.example.coursej.course.CourseController;
+import com.example.coursej.progress.lessonProgress.LessonProgressDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -26,6 +33,8 @@ public class LessonController {
 
     private final LessonService lessonService;
     private final LessonMapper lessonMapper;
+    private final PagedResourcesAssembler<LessonDTO> pagedResourcesAssembler;
+
 
     @GetMapping("/{lessonId}")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
@@ -36,7 +45,7 @@ public class LessonController {
         var lessonDTO = lessonMapper.toDTO(lesson);
 
         Link selfLink = linkTo(methodOn(LessonController.class).getLessonById(courseId, lesson.getId())).withSelfRel();
-        Link selfAllLink = linkTo(methodOn(LessonController.class).getLessonsByCourseId(courseId)).withSelfRel();
+        Link selfAllLink = linkTo(methodOn(LessonController.class).getLessonsByCourseId(courseId,"","",0,30,List.of(),"ASC")).withSelfRel();
         Link courseLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(courseId)).withRel("course");
 
         lessonDTO.add(courseLink, selfLink, selfAllLink);
@@ -47,10 +56,16 @@ public class LessonController {
     @GetMapping
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @Operation(summary = "Get all lessons by course id", description = "Get all lessons by course id")
-    public ResponseEntity<CollectionModel<LessonDTO>> getLessonsByCourseId(@PathVariable("courseId") Long courseId) {
+    public ResponseEntity<PagedModel<EntityModel<LessonDTO>>> getLessonsByCourseId(@PathVariable("courseId") Long courseId,
+                                                                                   @RequestParam(value = "titleFilter", required = false) String titleFilter,
+                                                                                   @RequestParam(value = "descriptionFilter", required = false) String descriptionFilter,
+                                                                                   @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                                   @RequestParam(value = "size", defaultValue = "30") int size,
+                                                                                   @RequestParam(value = "sortList", required = false) List<String> sortList,
+                                                                                   @RequestParam(value = "sortDirection", defaultValue = "ASC") String sortDirection) {
 
-        var lessons = lessonService.getLessonsByCourseId(courseId);
-        var lessonDTOs = lessonMapper.toDTOList(lessons);
+        Page<Lesson> lessons = lessonService.getFilteredAndSortedLessonsByCourseId(courseId, titleFilter, descriptionFilter, page, size, sortList, sortDirection);
+        Page<LessonDTO> lessonDTOs = lessons.map(lessonMapper::toDTO);
 
         lessonDTOs.forEach(
                 lesson -> {
@@ -58,12 +73,13 @@ public class LessonController {
                     lesson.add(selfLink);
                 });
 
-        CollectionModel<LessonDTO> collectionModel = CollectionModel.of(lessonDTOs,
-                linkTo(methodOn(CourseController.class).getCourseByCourseId(courseId)).withRel("course"),
-                linkTo(methodOn(LessonController.class).getLessonsByCourseId(courseId)).withSelfRel()
-        );
+        Link courseLink = linkTo(methodOn(CourseController.class).getCourseByCourseId(courseId)).withRel("course");
+        Link lessonsLink = linkTo(methodOn(LessonController.class).getLessonsByCourseId(courseId, "", "", 0, 30, List.of(), "ASC")).withSelfRel();
 
-        return ResponseEntity.ok(collectionModel);
+
+        PagedModel<EntityModel<LessonDTO>> result = pagedResourcesAssembler.toModel(lessonDTOs, lessonDTO -> EntityModel.of(lessonDTO, courseLink, lessonsLink));
+
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping
@@ -90,11 +106,9 @@ public class LessonController {
         if (!SecurityUtils.isCurrentUserOrAdmin(
                 lessonService.getLessonById(lessonDTO.getId()).getCourse().getUser().getId())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        else if (lessonService.getLessonById(id) == null) {
+        } else if (lessonService.getLessonById(id) == null) {
             return ResponseEntity.notFound().build();
-        }
-        else {
+        } else {
             var lesson = lessonMapper.toEntity(lessonDTO);
             lessonService.updateLesson(lesson);
 

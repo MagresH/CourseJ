@@ -8,6 +8,7 @@ import com.example.coursej.mapper.BaseMapper;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
@@ -44,6 +45,7 @@ public abstract class UserMapper implements BaseMapper<User, UserDTO> {
 
     @Named("toEnrollmentsIdList")
     List<Long> toEnrollmentsIdList(List<Enrollment> enrollments) {
+
         return enrollments.stream()
                 .map(Enrollment::getId)
                 .toList();
@@ -51,6 +53,7 @@ public abstract class UserMapper implements BaseMapper<User, UserDTO> {
 
     @Named("toCoursesIdList")
     List<Long> toCoursesIdList(List<Course> courses) {
+
         return courses.stream()
                 .map(Course::getId)
                 .toList();
@@ -58,13 +61,18 @@ public abstract class UserMapper implements BaseMapper<User, UserDTO> {
 
     @Named("toEnrollmentsList")
     List<Enrollment> toEnrollmentsList(List<Long> enrollmentsIds) {
+        if (enrollmentsIds == null)
+            return new ArrayList<>();
         return enrollmentsIds.stream()
                 .map(enrollmentService::getEnrollmentById)
                 .toList();
     }
 
+
     @Named("toCoursesList")
     List<Course> toCoursesList(List<Long> coursesIds) {
+        if (coursesIds == null)
+            return new ArrayList<>();
         return coursesIds.stream()
                 .map(courseService::getCourseById)
                 .toList();

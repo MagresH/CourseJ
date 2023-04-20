@@ -1,5 +1,9 @@
 package com.example.coursej.enrollment;
 
+import com.example.coursej.helpers.SortOrderUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +21,15 @@ public class EnrollmentService {
 
     }
 
-    public List<Enrollment> getAllEnrollments() {
-        return enrollmentRepository.findAll();
+    public Page<Enrollment> getSortedEnrollments(int page, int size, String sortDirection) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, "id"));
+        return enrollmentRepository.getAllEnrollments(pageRequest);
     }
 
+    public Page<Enrollment> getSortedEnrollmentsByUserId(Long userId, int page, int size, String sortDirection) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, "id"));
+        return enrollmentRepository.getEnrollmentsByUserId(userId, pageRequest);
+    }
     public Enrollment getEnrollmentById(Long id) {
         return enrollmentRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Enrollment with id " + id + " does not exist"));
@@ -37,9 +46,5 @@ public class EnrollmentService {
 
     public void deleteEnrollment(Long id) {
         enrollmentRepository.deleteById(id);
-    }
-
-    public List<Enrollment> getEnrollmentsByUserId(Long userId) {
-        return enrollmentRepository.getEnrollmentsByUserId(userId);
     }
 }

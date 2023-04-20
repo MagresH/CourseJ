@@ -19,10 +19,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EnrollmentDTO extends RepresentationModel<EnrollmentDTO> implements Serializable {
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     private Long courseId;
+
     private Long userId;
+
     private Long courseProgressId;
 
 }
