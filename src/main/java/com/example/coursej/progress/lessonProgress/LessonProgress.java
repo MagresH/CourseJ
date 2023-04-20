@@ -3,11 +3,13 @@ package com.example.coursej.progress.lessonProgress;
 import com.example.coursej.lesson.Lesson;
 import com.example.coursej.progress.Progress;
 import com.example.coursej.progress.courseProgress.CourseProgress;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @NoArgsConstructor

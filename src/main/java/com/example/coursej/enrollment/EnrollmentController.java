@@ -9,11 +9,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.hateoas.server.core.TypeReferences;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -68,8 +66,8 @@ public class EnrollmentController {
     @Operation(summary = "Get enrollment by ID", description = "Returns an enrollment by ID.")
     public ResponseEntity<EnrollmentDTO> getEnrollmentById(@PathVariable Long id) {
 
-        var enrollment = enrollmentService.getEnrollmentById(id);
-        var enrollmentDTO = enrollmentMapper.toDTO(enrollment);
+        Enrollment enrollment = enrollmentService.getEnrollmentById(id);
+        EnrollmentDTO enrollmentDTO = enrollmentMapper.toDTO(enrollment);
 
         if (!SecurityUtils.isCurrentUserOrAdmin(enrollment.getUser().getId())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -154,6 +152,7 @@ public class EnrollmentController {
     @Operation(summary = "Delete enrollment", description = "Deletes an enrollment by its ID.")
     public ResponseEntity<Void> deleteEnrollment(@PathVariable("id") Long enrollmentId) {
         enrollmentService.deleteEnrollment(enrollmentId);
+
         return ResponseEntity.noContent().build();
     }
 }

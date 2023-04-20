@@ -1,6 +1,5 @@
 package com.example.coursej.course;
 
-import com.example.coursej.user.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;

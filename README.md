@@ -29,8 +29,7 @@ The following technologies are used in this project:
 - Maven
 
 ## Future improvements
-- pagination, sorting, and filtering for courses
 - caching 
-- scheduling 
 - better exception handling
+- scheduling
 - better testing

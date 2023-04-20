@@ -1,7 +1,6 @@
 package com.example.coursej.progress.lessonProgress;
 
 import com.example.coursej.config.SecurityUtils;
-import com.example.coursej.course.CourseDTO;
 import com.example.coursej.lesson.LessonController;
 import com.example.coursej.progress.courseProgress.CourseProgressController;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,11 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

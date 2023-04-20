@@ -2,7 +2,6 @@ package com.example.coursej.progress;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
 

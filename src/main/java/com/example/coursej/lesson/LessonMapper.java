@@ -5,7 +5,6 @@ import com.example.coursej.course.CourseService;
 import com.example.coursej.mapper.BaseMapper;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import java.util.List;
 

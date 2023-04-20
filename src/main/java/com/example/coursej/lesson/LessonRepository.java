@@ -1,6 +1,5 @@
 package com.example.coursej.lesson;
 
-import com.example.coursej.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

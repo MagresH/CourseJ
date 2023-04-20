@@ -12,14 +12,11 @@ import java.time.LocalDateTime;
 public class CourseProgressService {
 
     private final CourseProgressRepository courseProgressRepository;
-    private final UserRepository userRepository;
 
     @Autowired
-    public CourseProgressService(CourseProgressRepository courseProgressRepository,
-                                 UserRepository userRepository) {
+    public CourseProgressService(CourseProgressRepository courseProgressRepository) {
         this.courseProgressRepository = courseProgressRepository;
 
-        this.userRepository = userRepository;
     }
 
     public CourseProgress addCourseProgress(CourseProgress courseProgress) {
